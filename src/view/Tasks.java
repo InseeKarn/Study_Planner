@@ -3,7 +3,7 @@ package view;
 import java.awt.*;
 import javax.swing.*;
 
-import main.Data;
+import service.Data;
 
 public class Tasks extends JPanel{
     private final Data dataRepository;

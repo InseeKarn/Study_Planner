@@ -4,6 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import service.Data;
 //header import
 import view.Header;
 
@@ -12,12 +13,13 @@ import view.Schedule;
 import view.Tasks;
 
 public class Main extends JFrame {
-    private final Data dataRepository = new Data();
-
+	
     // Components
     private CardLayout pageCardLayout;
     private JPanel contentCardPanel;
 
+	// Data
+    private final Data dataRepository = new Data();
 
     public Main() {
         setTitle("Study Planner");
