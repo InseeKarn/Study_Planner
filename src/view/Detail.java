@@ -1,6 +1,7 @@
-package main;
+package view;
 
 import javax.swing.*;
+
 import java.awt.*;
 
 public class Detail extends JPanel {

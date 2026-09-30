@@ -1,4 +1,4 @@
-package main;
+package view;
 
 public class Task {
     private String subject;

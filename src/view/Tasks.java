@@ -4,10 +4,6 @@ import java.awt.*;
 import javax.swing.*;
 
 import main.Data;
-import main.Detail;
-import main.Progress;
-import main.Task;
-import main.Task_Table;
 
 public class Tasks extends JPanel{
     private final Data dataRepository;

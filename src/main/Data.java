@@ -3,6 +3,8 @@ package main;
 import java.util.ArrayList;
 import java.util.List;
 
+import view.Task;
+
 public class Data {
     private final List<Task> taskList = new ArrayList<>();
 
