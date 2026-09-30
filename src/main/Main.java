@@ -6,6 +6,8 @@ import javax.swing.border.EmptyBorder;
 
 //header import
 import view.Header;
+
+//Pages import
 import view.Schedule;
 import view.Tasks;
 
