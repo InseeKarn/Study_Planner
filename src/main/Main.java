@@ -49,6 +49,7 @@ public class Main extends JFrame {
 
         contentCardPanel.add(schedulePage, "SCHEDULE");
         contentCardPanel.add(tasksPage, "TASKS");
+        
         pageCardLayout.show(contentCardPanel, "TASKS");
 
         mainPanel.add(headerPanel, BorderLayout.NORTH);
