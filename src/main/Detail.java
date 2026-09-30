@@ -9,26 +9,35 @@ public class Detail extends JPanel {
     private final JLabel detailDueLabel;
     private final JLabel detailDescLabel;
     private final JLabel detailStatusLabel;
+    
+    //Font
+    private Font SansSerif = new Font("SansSerif", Font.BOLD, 12);
 
-    public Detail(Color cardBg, Font boldFont, Font plainFont) {
+    public Detail(Color cardBg) {
         setLayout(new GridLayout(5, 1, 2, 4));
         setPreferredSize(new Dimension(290, 160));
         setMaximumSize(new Dimension(290, 160));
         setBackground(cardBg);
+        
         setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(230, 220, 210)), "Details", 0, 0, boldFont));
+                BorderFactory.createLineBorder(new Color(230, 220, 210)),
+                "Details",
+                0,
+                0,
+                SansSerif
+        ));
 
-        detailSubjectLabel = new JLabel("วิชา: -");
-        detailTitleLabel = new JLabel("งาน: -");
-        detailDueLabel = new JLabel("กำหนดส่ง: -");
-        detailDescLabel = new JLabel("รายละเอียด: -");
-        detailStatusLabel = new JLabel("สถานะ: -");
+        detailSubjectLabel = new JLabel("Subject: -");
+        detailTitleLabel = new JLabel("Assignment: -");
+        detailDueLabel = new JLabel("Due Date: -");
+        detailDescLabel = new JLabel("Details: -");
+        detailStatusLabel = new JLabel("Status: -");
 
-        detailSubjectLabel.setFont(plainFont);
-        detailTitleLabel.setFont(plainFont);
-        detailDueLabel.setFont(plainFont);
-        detailDescLabel.setFont(plainFont);
-        detailStatusLabel.setFont(plainFont);
+        detailSubjectLabel.setFont(SansSerif);
+        detailTitleLabel.setFont(SansSerif);
+        detailDueLabel.setFont(SansSerif);
+        detailDescLabel.setFont(SansSerif);
+        detailStatusLabel.setFont(SansSerif);
 
         add(detailSubjectLabel);
         add(detailTitleLabel);
@@ -39,17 +48,17 @@ public class Detail extends JPanel {
 
     public void updateDetails(Task task) {
         if (task == null) {
-            detailSubjectLabel.setText("วิชา: -");
-            detailTitleLabel.setText("งาน: -");
-            detailDueLabel.setText("กำหนดส่ง: -");
-            detailDescLabel.setText("รายละเอียด: -");
-            detailStatusLabel.setText("สถานะ: -");
+            detailSubjectLabel.setText("Subject: -");
+            detailTitleLabel.setText("Assignment: -");
+            detailDueLabel.setText("Due Date: -");
+            detailDescLabel.setText("Details: -");
+            detailStatusLabel.setText("Status: -");
             return;
         }
-        detailSubjectLabel.setText("วิชา: " + task.getSubject());
-        detailTitleLabel.setText("งาน: " + task.getTitle());
-        detailDueLabel.setText("กำหนดส่ง: " + task.getDueDate());
-        detailDescLabel.setText("รายละเอียด: " + task.getDescription());
-        detailStatusLabel.setText("สถานะ: " + task.getStatus());
+        detailSubjectLabel.setText("Subject: " + task.getSubject());
+        detailTitleLabel.setText("Assignment: " + task.getTitle());
+        detailDueLabel.setText("Due Date: " + task.getDueDate());
+        detailDescLabel.setText("Details: " + task.getDescription());
+        detailStatusLabel.setText("Status: " + task.getStatus());
     }
 }

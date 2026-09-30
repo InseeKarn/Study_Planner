@@ -12,9 +12,6 @@ import main.Task_Table;
 public class Tasks extends JPanel{
     private final Data dataRepository;
 
-    private final Font fontThaiBold;
-    private final Font fontThaiPlain;
-
     private Task_Table taskTablePanel;
     private Detail detailCardPanel;
     private Progress progressCardPanel;
@@ -25,24 +22,17 @@ public class Tasks extends JPanel{
     Color accentGreen = new Color(85, 110, 90);
 	
 	public Tasks(
-            Data dataRepository,
-            Font fontThaiBold,
-            Font fontThaiPlain
+            Data dataRepository
             ) {
 		
         this.dataRepository = dataRepository;
-        this.fontThaiBold = fontThaiBold;
-        this.fontThaiPlain = fontThaiPlain;
+
         
         setLayout(new BorderLayout(15, 0));
         setOpaque(false);
         
         // Task Table
-        taskTablePanel = new Task_Table(
-        		bgColor,
-                fontThaiBold,
-                fontThaiPlain
-        );
+        taskTablePanel = new Task_Table(bgColor);
         
         
         taskTablePanel.setTaskTableListener(
@@ -83,17 +73,13 @@ public class Tasks extends JPanel{
         
         //Details & Progress position
         detailCardPanel = new Detail(
-        		bgColor,
-                fontThaiBold,
-                fontThaiPlain
+        		bgColor
         );
 
         progressCardPanel = new Progress(
         		bgColor,
                 textColor,
-                accentGreen,
-                fontThaiBold,
-                fontThaiPlain
+                accentGreen
         );
 
         cardsContainer.add(progressCardPanel);

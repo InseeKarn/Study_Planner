@@ -19,11 +19,19 @@ public class Task_Table extends JPanel {
     private final JTable taskTable;
     private TaskTableListener listener;
 
-    public Task_Table(Color cardBg, Font boldFont, Font plainFont) {
+    public Task_Table(Color cardBg) {
         setLayout(new BorderLayout());
         setOpaque(false);
 
-        String[] columnNames = {"วิชา", "ชื่องาน", "วันกำหนดส่ง", "สถานะ", "Submit", "Details"};
+        String[] columnNames = {
+                "Subject",
+                "Assignment",
+                "Due Date",
+                "Status",
+                "Submit",
+                "Details"
+            };
+        
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -33,10 +41,15 @@ public class Task_Table extends JPanel {
 
         taskTable = new JTable(tableModel);
         taskTable.setRowHeight(38);
-        taskTable.setFont(plainFont);
+        taskTable.setFont(new Font("SansSerif", Font.PLAIN, 12));
         taskTable.setBackground(cardBg);
         taskTable.setShowGrid(false);
-        taskTable.getTableHeader().setFont(boldFont);
+        
+        
+        taskTable.getTableHeader().setFont(
+        		new Font("SansSerif", Font.BOLD, 12)
+        		);
+        
         taskTable.getTableHeader().setBackground(cardBg);
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();

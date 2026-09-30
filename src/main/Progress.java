@@ -7,16 +7,24 @@ public class Progress extends JPanel {
     private final JLabel percentLabel;
     private final JLabel statusCountLabel;
 
-    public Progress(Color cardBg, Color textDark, Color accentGreen, Font boldFont, Font plainFont) {
+    private Font SansSerif = new Font("SansSerif", Font.BOLD, 18);
+    
+    public Progress(Color cardBg, Color textDark, Color accentGreen) {
         setLayout(new GridLayout(3, 1, 5, 2));
         setPreferredSize(new Dimension(290, 130));
         setMaximumSize(new Dimension(290, 130));
         setBackground(cardBg);
         setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(230, 220, 210)), "Weekly Progress", 0, 0, boldFont));
+                BorderFactory.createLineBorder(
+                		new Color(230, 220, 210)),
+                		"Weekly Progress",
+						0,
+						0,
+						SansSerif
+				));
 
         JLabel progressTitle = new JLabel("Weekly Progress", SwingConstants.CENTER);
-        progressTitle.setFont(new Font("Serif", Font.BOLD, 15));
+        progressTitle.setFont(SansSerif);
         progressTitle.setForeground(textDark);
 
         percentLabel = new JLabel("0% Completed", SwingConstants.CENTER);
@@ -24,7 +32,7 @@ public class Progress extends JPanel {
         percentLabel.setForeground(accentGreen);
 
         statusCountLabel = new JLabel("Completed: 0 | Pending: 0", SwingConstants.CENTER);
-        statusCountLabel.setFont(plainFont);
+        statusCountLabel.setFont(SansSerif);
         statusCountLabel.setForeground(Color.GRAY);
 
         add(progressTitle);
