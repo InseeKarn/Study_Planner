@@ -1,11 +1,11 @@
 package main;
 
 import java.awt.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+//header import
+import view.Header;
 
 public class Main extends JFrame {
 
@@ -33,21 +33,21 @@ public class Main extends JFrame {
         Color bgCream = new Color(245, 240, 230);
         Color cardBg = new Color(252, 250, 245);
         Color textDark = new Color(60, 50, 40);
-        Color accentNavy = new Color(44, 76, 89);
         Color accentGreen = new Color(85, 110, 90);
 
         JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
         mainPanel.setBackground(bgCream);
         mainPanel.setBorder(new EmptyBorder(15, 20, 15, 20));
 
-        // Header
-        JPanel headerPanel = createHeaderPanel(textDark, accentNavy);
-
         // Content (CardLayout)
         pageCardLayout = new CardLayout();
         contentCardPanel = new JPanel(pageCardLayout);
         contentCardPanel.setOpaque(false);
-
+        
+        
+        //header
+        Header headerPanel = new Header(pageCardLayout, contentCardPanel);
+        
         JPanel schedulePage = createSchedulePage(cardBg);
         JPanel tasksPage = createTasksPage(cardBg, textDark, accentGreen);
 
@@ -64,57 +64,7 @@ public class Main extends JFrame {
         refreshAllData();
     }
 
-    private JPanel createHeaderPanel(Color textDark, Color accentNavy) {
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setOpaque(false);
 
-        JLabel titleLabel = new JLabel("Study Planner");
-        titleLabel.setFont(new Font("Serif", Font.BOLD, 30));
-        titleLabel.setForeground(textDark);
-
-        // Local date
-        LocalDate currentDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", Locale.ENGLISH);
-        String formattedDate = currentDate.format(formatter).toUpperCase();
-
-        JLabel dateLabel = new JLabel(formattedDate);
-        dateLabel.setFont(new Font("SansSerif", Font.BOLD, 11));
-        dateLabel.setForeground(new Color(130, 120, 110));
-
-        JPanel titleBox = new JPanel(new GridLayout(2, 1));
-        titleBox.setOpaque(false);
-        titleBox.add(titleLabel);
-        titleBox.add(dateLabel);
-
-        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
-        navPanel.setOpaque(false);
-
-        JButton navSchedule = new JButton("SCHEDULE");
-        JButton navTasks = new JButton("SUBJECTS & TASKS");
-
-        styleNavButton(navSchedule, new Color(150, 140, 130));
-        styleNavButton(navTasks, accentNavy);
-
-        navSchedule.addActionListener(e -> {
-            pageCardLayout.show(contentCardPanel, "SCHEDULE");
-            navSchedule.setForeground(accentNavy);
-            navTasks.setForeground(new Color(150, 140, 130));
-        });
-
-        navTasks.addActionListener(e -> {
-            pageCardLayout.show(contentCardPanel, "TASKS");
-            navTasks.setForeground(accentNavy);
-            navSchedule.setForeground(new Color(150, 140, 130));
-        });
-
-        navPanel.add(navSchedule);
-        navPanel.add(navTasks);
-
-        headerPanel.add(titleBox, BorderLayout.WEST);
-        headerPanel.add(navPanel, BorderLayout.EAST);
-
-        return headerPanel;
-    }
 
     private JPanel createSchedulePage(Color cardBg) {
         JPanel schedulePage = new JPanel(new GridBagLayout());
@@ -227,14 +177,7 @@ public class Main extends JFrame {
         }
     }
 
-    private void styleNavButton(JButton btn, Color color) {
-        btn.setFont(new Font("SansSerif", Font.BOLD, 12));
-        btn.setForeground(color);
-        btn.setContentAreaFilled(false);
-        btn.setBorderPainted(false);
-        btn.setFocusPainted(false);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
