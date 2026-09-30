@@ -2,6 +2,8 @@ package view;
 
 import javax.swing.*;
 
+import model.Task;
+
 import java.awt.*;
 
 public class Detail extends JPanel {

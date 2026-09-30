@@ -3,6 +3,7 @@ package view;
 import java.awt.*;
 import javax.swing.*;
 
+import model.Task;
 import service.Data;
 
 public class Tasks extends JPanel{

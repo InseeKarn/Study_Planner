@@ -8,6 +8,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import model.Task;
+
 public class Task_Table extends JPanel {
 
     public interface TaskTableListener {

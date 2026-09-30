@@ -3,7 +3,7 @@ package service;
 import java.util.ArrayList;
 import java.util.List;
 
-import view.Task;
+import model.Task;
 
 public class Data {
     private final List<Task> taskList = new ArrayList<>();
