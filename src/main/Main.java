@@ -6,6 +6,7 @@ import javax.swing.border.EmptyBorder;
 
 //header import
 import view.Header;
+import view.Schedule;
 
 public class Main extends JFrame {
 
@@ -48,7 +49,7 @@ public class Main extends JFrame {
         //header
         Header headerPanel = new Header(pageCardLayout, contentCardPanel);
         
-        JPanel schedulePage = createSchedulePage(cardBg);
+        JPanel schedulePage = new Schedule();
         JPanel tasksPage = createTasksPage(cardBg, textDark, accentGreen);
 
         contentCardPanel.add(schedulePage, "SCHEDULE");
@@ -66,15 +67,7 @@ public class Main extends JFrame {
 
 
 
-    private JPanel createSchedulePage(Color cardBg) {
-        JPanel schedulePage = new JPanel(new GridBagLayout());
-        schedulePage.setBackground(cardBg);
-        JLabel scheduleLabel = new JLabel("--- หน้า Schedule (ปฏิทิน) ---");
-        scheduleLabel.setFont(new Font("Leelawadee UI", Font.BOLD, 18));
-        scheduleLabel.setForeground(Color.GRAY);
-        schedulePage.add(scheduleLabel);
-        return schedulePage;
-    }
+
 
     private JPanel createTasksPage(Color cardBg, Color textDark, Color accentGreen) {
         JPanel panel = new JPanel(new BorderLayout(15, 0));
@@ -154,10 +147,10 @@ public class Main extends JFrame {
         JTextField txtDesc = new JTextField();
 
         Object[] message = {
-            "ชื่อวิชา:", txtSubject,
-            "ชื่องาน/การบ้าน:", txtTitle,
-            "วันกำหนดส่ง (เช่น 15/10):", txtDue,
-            "คำอธิบายงานเพิ่มเติม:", txtDesc
+            "Subject:", txtSubject,
+            "Work:", txtTitle,
+            "Due date:", txtDue,
+            "Description:", txtDesc
         };
 
         int option = JOptionPane.showConfirmDialog(this, message, "เพิ่มรายการงานใหม่", JOptionPane.OK_CANCEL_OPTION);
