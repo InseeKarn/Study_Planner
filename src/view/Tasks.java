@@ -14,22 +14,27 @@ public class Tasks extends JPanel{
     private Progress progressCardPanel;
     
     //Color
-    Color bgColor = new Color(252, 250, 245);
-    Color textColor = new Color(60, 50, 40);
-    Color accentGreen = new Color(85, 110, 90);
+    private final Color bgDark = new Color(17, 17, 17);
+    private final Color cardDark = new Color(24, 24, 24);
+    private final Color elementDark = new Color(32, 32, 32);
+    private final Color borderDark = new Color(42, 42, 42);
+
+    private final Color textPrimary = new Color(242, 242, 242);
+    private final Color textSecondary = new Color(153, 153, 153);
+
+    private final Color accentGreen = new Color(143, 214, 148);
 	
-	public Tasks(
-            Data dataRepository
-            ) {
+	public Tasks(Data dataRepository) {
 		
         this.dataRepository = dataRepository;
 
         
         setLayout(new BorderLayout(15, 0));
-        setOpaque(false);
+        setBackground(bgDark);
+        setOpaque(true);
         
         // Task Table
-        taskTablePanel = new Task_Table(bgColor);
+        taskTablePanel = new Task_Table(cardDark);
         
         
         taskTablePanel.setTaskTableListener(
@@ -44,8 +49,18 @@ public class Tasks extends JPanel{
                     }
 
                     @Override
-                    public void onDetailsClicked(Task task) {
-                        detailCardPanel.updateDetails(task);
+                    public void onDeleteClicked(Task task) {
+                        int option = JOptionPane.showConfirmDialog(
+                            Tasks.this,
+                            "Are you sure you want to delete this assignment?",
+                            "Delete Assignment",
+                            JOptionPane.YES_NO_OPTION
+                        );
+
+                        if (option == JOptionPane.YES_OPTION) {
+                            dataRepository.deleteTask(task);
+                            refreshAllData();
+                        }
                     }
                 }
             );
@@ -71,12 +86,12 @@ public class Tasks extends JPanel{
         
         //Details & Progress position
         detailCardPanel = new Detail(
-        		bgColor
+        		cardDark
         );
 
         progressCardPanel = new Progress(
-        		bgColor,
-                textColor,
+        		cardDark,
+        		textPrimary,
                 accentGreen
         );
 
@@ -96,7 +111,7 @@ public class Tasks extends JPanel{
                 new Dimension(50, 50)
         );
         addButton.setBackground(accentGreen);
-        addButton.setForeground(Color.WHITE);
+        addButton.setForeground(new Color(17, 17, 17));
         addButton.setFocusPainted(false);
         addButton.setBorderPainted(false);
         addButton.setCursor(

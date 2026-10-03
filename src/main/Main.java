@@ -28,10 +28,10 @@ public class Main extends JFrame {
         setLocationRelativeTo(null);
 
         // Colors
-        Color bgCream = new Color(245, 240, 230);
+        Color bgDark = new Color(17, 17, 17);
         
         JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
-        mainPanel.setBackground(bgCream);
+        mainPanel.setBackground(bgDark);
         mainPanel.setBorder(new EmptyBorder(15, 20, 15, 20));
 
         // Content (CardLayout)

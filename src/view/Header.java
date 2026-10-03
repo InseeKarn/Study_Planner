@@ -7,10 +7,14 @@ import java.util.Locale;
 import javax.swing.*;
 
 public class Header extends JPanel{
+	
 	public Header(CardLayout pageCardLayout, JPanel contentCardPanel) {
 		
-        Color textDark = new Color(60, 50, 40);
-        Color accentNavy = new Color(44, 76, 89);
+		// Colors
+        Color textPrimary = new Color(242, 242, 242);
+        Color textSecondary = new Color(120, 120, 120);
+        Color textInactive = new Color(130, 130, 130);
+        Color headerDark = new Color(24, 24, 24);
         
         setLayout(new BorderLayout());
 		
@@ -18,7 +22,8 @@ public class Header extends JPanel{
         // title
         JLabel titleLabel = new JLabel("Study Planner");
         titleLabel.setFont(new Font("Serif", Font.BOLD, 30));
-        titleLabel.setForeground(textDark);
+        
+        titleLabel.setForeground(textPrimary);
         
 
         // Local date
@@ -31,6 +36,7 @@ public class Header extends JPanel{
         dateLabel.setForeground(new Color(130, 120, 110));
         
         JPanel titleBox = new JPanel(new GridLayout(2, 1));
+        setBackground(headerDark);
         titleBox.setOpaque(false);
         titleBox.add(titleLabel);
         titleBox.add(dateLabel);
@@ -43,17 +49,17 @@ public class Header extends JPanel{
         JButton navTasks = new JButton("SUBJECTS & TASKS");
         
         styleNavButton(navSchedule, new Color(150, 140, 130));
-        styleNavButton(navTasks, accentNavy);
+        styleNavButton(navTasks, textSecondary);
 
         navSchedule.addActionListener(e -> {
             pageCardLayout.show(contentCardPanel, "SCHEDULE");
-            navSchedule.setForeground(accentNavy);
+            navSchedule.setForeground(textPrimary);
             navTasks.setForeground(new Color(150, 140, 130));
         });
 
         navTasks.addActionListener(e -> {
             pageCardLayout.show(contentCardPanel, "TASKS");
-            navTasks.setForeground(accentNavy);
+            navTasks.setForeground(textInactive);
             navSchedule.setForeground(new Color(150, 140, 130));
         });
 

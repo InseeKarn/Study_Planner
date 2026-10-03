@@ -110,5 +110,10 @@ public class Data {
         return (int) (((double) getCompletedCount() / total) * 100);
     }
 
+    public void deleteTask(Task task) {
+        taskList.remove(task);
+        saveToJson();
+    }
+
 
 }
