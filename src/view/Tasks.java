@@ -38,6 +38,7 @@ public class Tasks extends JPanel{
                     @Override
                     public void onSubmitClicked(Task task) {
                         task.toggleStatus();
+                        dataRepository.saveToJson();
                         refreshAllData();
                         detailCardPanel.updateDetails(task);
                     }

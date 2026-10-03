@@ -7,17 +7,26 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
+
 import model.Task;
 
 public class Data {
+	
     private final List<Task> taskList = new ArrayList<>();
 
     private final Gson gson = new GsonBuilder()
             .setPrettyPrinting()
             .create();
     
+    private final File dataFile = new File("data/tasks.json");
+    
     public Data() {
-        initDefaultData();
+    	loadFromJson();
     }
 
     public List<Task> getAllTasks() {
@@ -26,8 +35,57 @@ public class Data {
 
     public void addTask(Task task) {
         taskList.add(task);
+        saveToJson();
     }
+    
+    public void saveToJson() {
 
+        try {
+
+            File parentFolder = dataFile.getParentFile();
+
+            if (!parentFolder.exists()) {
+                parentFolder.mkdirs();
+            }
+
+            try (FileWriter writer = new FileWriter(dataFile)) {
+                gson.toJson(taskList, writer);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void loadFromJson() {
+
+    	if (!dataFile.exists()) {
+    	    
+    	    saveToJson();
+    	    return;
+    	}
+
+        try (FileReader reader = new FileReader(dataFile)) {
+
+            Type taskListType =
+                    new TypeToken<List<Task>>() {}.getType();
+
+            List<Task> loadedTasks =
+                    gson.fromJson(reader, taskListType);
+
+            if (loadedTasks != null) {
+                taskList.addAll(loadedTasks);
+            }
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+            taskList.clear();
+            
+        }
+    }
+    
     public int getCompletedCount() {
         int count = 0;
         for (Task task : taskList) {
@@ -52,16 +110,5 @@ public class Data {
         return (int) (((double) getCompletedCount() / total) * 100);
     }
 
-    private void initDefaultData() {
-        taskList.add(new Task("Calculus", "Calculus II Homework", "12/01", "Overdue", "Chapter 5 Exercise 1-10"));
-        taskList.add(new Task("History", "Chapter 3 Homework", "14/01", "In Progress", "Summary World War I"));
-        taskList.add(new Task("Physics", "Chapter 3 Homework", "14/01", "In Progress", "Newton's laws problems"));
-        taskList.add(new Task("Literature", "Essay on Modernism", "14/01", "In Progress", "1500 words essay"));
-        taskList.add(new Task("Philosophy", "Ethics Response Paper", "12/01", "In Progress", "Read Chapter 2 first"));
-        taskList.add(new Task("Calculus", "Problem Set 7", "14/01", "In Progress", "Calculus Derivatives"));
-        taskList.add(new Task("History", "Bismarck Essay Draft", "14/01", "In Progress", "Drafting 5 pages"));
-        taskList.add(new Task("Physics", "Lab Report - Optics", "14/01", "Completed", "Optics Experiment PDF"));
-        taskList.add(new Task("Literature", "Virginia Woolf Annotation", "14/01", "In Progress", "Annotate Mrs. Dalloway"));
-        taskList.add(new Task("Philosophy", "Kant Groundwork Reading", "14/01", "Completed", "Read pages 40-80"));
-    }
+
 }
