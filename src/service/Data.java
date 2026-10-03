@@ -3,11 +3,19 @@ package service;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
 import model.Task;
 
 public class Data {
     private final List<Task> taskList = new ArrayList<>();
 
+    private final Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .create();
+    
     public Data() {
         initDefaultData();
     }
