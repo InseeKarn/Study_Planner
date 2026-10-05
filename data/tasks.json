@@ -1,16 +1,1 @@
-[
-  {
-    "subject": "test1",
-    "title": "a",
-    "dueDate": "a",
-    "status": "In Progress",
-    "description": "Store in JSON file"
-  },
-  {
-    "subject": "Test2",
-    "title": "a",
-    "dueDate": "a",
-    "status": "In Progress",
-    "description": "Store in JSON file data/task.json"
-  }
-]
+[]
