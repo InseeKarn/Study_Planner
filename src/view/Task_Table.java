@@ -7,6 +7,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.*;
 
+import model.StatusRenderer;
 import model.Task;
 
 public class Task_Table extends JPanel {

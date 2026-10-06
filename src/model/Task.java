@@ -78,7 +78,7 @@ public class Task {
             if (due != null) {
                 long daysLeft = ChronoUnit.DAYS.between(LocalDate.now(), due);
                 if (daysLeft <= 3) {
-                    return daysLeft < 0 ? "Overdue" : "Urgent (" + daysLeft + "d)";
+                    return daysLeft < 0 ? "Overdue" : "Days Left (" + daysLeft + "d)";
                 }
             }
         } catch (Exception ignored) {}
