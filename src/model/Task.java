@@ -68,6 +68,7 @@ public class Task {
     }
 
     // --- คำนวณข้อความประจำสถานะ ---
+    // --- คำนวณข้อความประจำสถานะ ---
     public String getStatusText() {
         if (isCompleted()) {
             return "Completed";
@@ -77,13 +78,17 @@ public class Task {
             LocalDate due = parseDueDate(dueDate);
             if (due != null) {
                 long daysLeft = ChronoUnit.DAYS.between(LocalDate.now(), due);
-                if (daysLeft <= 3) {
-                    return daysLeft < 0 ? "Overdue" : "Days Left (" + daysLeft + "d)";
+                if (daysLeft < 0) {
+                    return "Overdue";           // 🔴 เลยกำหนดส่ง
+                } else if (daysLeft == 0) {
+                    return "Due Today";         // 🔴 กำหนดส่งวันนี้
+                } else if (daysLeft <= 3) {
+                    return "Days Left (" + daysLeft + "d)"; // 🔴 ด่วน (เหลือ 1-3 วัน)
                 }
             }
         } catch (Exception ignored) {}
 
-        return "In Progress";
+        return "In Progress";                   // 🟡 ดำเนินการอยู่ (> 3 วัน)
     }
 
     // ตัวช่วยแปลง String วันที่ รองรับ DD-MM-YYYY, DD/MM/YYYY และ YYYY-MM-DD
