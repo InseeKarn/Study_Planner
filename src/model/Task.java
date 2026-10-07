@@ -11,6 +11,13 @@ public class Task {
     private String dueDate;
     private String status;
     private String description;
+    
+    // Status Colors
+    private static final Color COLOR_COMPLETED = new Color(46, 125, 80);    // Green
+    private static final Color COLOR_OVERDUE = new Color(190, 55, 75);         // Red
+    private static final Color COLOR_URGENT = new Color(125, 75, 165);      // Purple
+    private static final Color COLOR_WARNING = new Color(190, 135, 35);     // Gold
+    private static final Color COLOR_NORMAL = new Color(48, 82, 160);       // Blue
 
     public Task(String subject, String title, String dueDate, String status, String description) {
         this.subject = subject;
@@ -48,61 +55,92 @@ public class Task {
         }
     }
 
-    // --- คำนวณสีประจำสถานะ ---
+    // Status Color
     public Color getStatusColor() {
+
         if (isCompleted()) {
-            return new Color(46, 125, 50); // 🟢 สีเขียว (Completed)
+            return COLOR_COMPLETED;
         }
 
         try {
             LocalDate due = parseDueDate(dueDate);
+
             if (due != null) {
-                long daysLeft = ChronoUnit.DAYS.between(LocalDate.now(), due);
-                if (daysLeft <= 3) {
-                    return new Color(198, 40, 40); // 🔴 สีแดง (เหลือ <= 3 วัน หรือเลยกำหนด)
+                long daysLeft = ChronoUnit.DAYS.between(
+                    LocalDate.now(),
+                    due
+                );
+
+                // Overdue
+                if (daysLeft < 0) {
+                    return COLOR_OVERDUE;
                 }
+
+                // เหลือ 1-5 วัน || Due Today - เหลือ 0 วัน
+                if (daysLeft <= 5 || daysLeft == 0) {
+                    return COLOR_URGENT;
+                }
+
+                // เหลือ 6-7 วัน
+                if (daysLeft <= 7) {
+                    return COLOR_WARNING;
+                }
+
+                // เหลือมากกว่า 7 วัน
+                return COLOR_NORMAL;
             }
+
         } catch (Exception ignored) {}
 
-        return new Color(230, 160, 0); // 🟡 สีเหลือง (In Progress > 3 วัน)
+        return COLOR_NORMAL;
     }
 
     // --- คำนวณข้อความประจำสถานะ ---
     public String getStatusText() {
+
         if (isCompleted()) {
             return "Completed";
         }
 
         try {
             LocalDate due = parseDueDate(dueDate);
+
             if (due != null) {
-                long daysLeft = ChronoUnit.DAYS.between(LocalDate.now(), due);
+                long daysLeft = ChronoUnit.DAYS.between(
+                    LocalDate.now(),
+                    due
+                );
+
                 if (daysLeft < 0) {
-                    return "Overdue";           // 🔴 เลยกำหนดส่ง
+                    return "Overdue";
+
                 } else if (daysLeft == 0) {
-                    return "Due Today";         // 🔴 กำหนดส่งวันนี้
-                } else if (daysLeft <= 3) {
-                    return "Days Left (" + daysLeft + "d)"; // 🔴 ด่วน (เหลือ 1-3 วัน)
+                    return "Due Today";
+
+                } else {
+                    return "Days Left (" + daysLeft + "d)";
                 }
             }
+
         } catch (Exception ignored) {}
 
-        return "In Progress";                   // 🟡 ดำเนินการอยู่ (> 3 วัน)
+        return "No Due Date";
     }
 
     // ตัวช่วยแปลง String วันที่ รองรับ DD-MM-YYYY
     public static LocalDate parseDueDate(String dateStr) {
-        if (dateStr == null || dateStr.trim().isEmpty()) return null;
-        dateStr = dateStr.trim();
-        
-        //กำหนดรูปแบบวันที่
-        String[] patterns = {"d-M-yyyy"};
-        for (String pattern : patterns) {
-            try {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-                return LocalDate.parse(dateStr, formatter);
-            } catch (Exception ignored) {}
+        if (dateStr == null || dateStr.trim().isEmpty()) {
+            return null;
         }
-        return null;
+
+        try {
+            DateTimeFormatter formatter =
+                    DateTimeFormatter.ofPattern("d-M-yyyy");
+
+            return LocalDate.parse(dateStr.trim(), formatter);
+
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

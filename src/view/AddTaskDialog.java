@@ -108,9 +108,9 @@ public class AddTaskDialog {
                 || !txtMonth.getText().trim().isEmpty()
                 || !txtYear.getText().trim().isEmpty()) {
 
-            due = txtDay.getText().trim()
-                    + "-" + txtMonth.getText().trim()
-                    + "-" + txtYear.getText().trim();
+        	due = txtDay.getText().trim()
+        	        + "-" + txtMonth.getText().trim()
+        	        + "-" + txtYear.getText().trim();
         }
 
         String desc = txtDesc.getText().trim();
