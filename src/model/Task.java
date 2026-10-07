@@ -92,7 +92,7 @@ public class Task {
     }
 
     // ตัวช่วยแปลง String วันที่ รองรับ DD-MM-YYYY, DD/MM/YYYY และ YYYY-MM-DD
-    private LocalDate parseDueDate(String dateStr) {
+    public static LocalDate parseDueDate(String dateStr) {
         if (dateStr == null || dateStr.trim().isEmpty()) return null;
         dateStr = dateStr.trim();
         try {
