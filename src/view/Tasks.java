@@ -94,8 +94,14 @@ public class Tasks extends JPanel {
         addButton.setFocusPainted(false);
         addButton.setBorderPainted(false);
         addButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        addButton.addActionListener(e -> {
+            Task newTask = AddTaskDialog.showDialog(this, dataRepository);
 
-        addButton.addActionListener(e -> showAddTaskDialog());
+            if (newTask != null) {
+                dataRepository.addTask(newTask);
+                refreshAllData();
+            }
+        });
 
         JPanel buttonBox = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         buttonBox.setOpaque(false);
@@ -121,82 +127,5 @@ public class Tasks extends JPanel {
         );
     }
     
-    private void showAddTaskDialog() {
-        // 1. ดึงรายชื่อวิชาที่มีอยู่ในระบบเดิมมาใส่ใน ComboBox (ไม่ซ้ำกัน)
-        JComboBox<String> cbSubject = new JComboBox<>();
-        cbSubject.setEditable(true); // 👈 เปิดให้ผู้ใช้พิมพ์รายชื่อวิชาใหม่ได้เอง
-
-        java.util.List<String> existingSubjects = new java.util.ArrayList<>();
-        for (Task t : dataRepository.getAllTasks()) {
-            String sub = t.getSubject();
-            if (sub != null && !sub.trim().isEmpty() && !existingSubjects.contains(sub.trim())) {
-                existingSubjects.add(sub.trim());
-            }
-        }
-        
-        for (String sub : existingSubjects) {
-            cbSubject.addItem(sub);
-        }
-        cbSubject.setSelectedItem(""); // ตั้งให้เริ่มต้นเป็นช่องว่างเปล่า
-
-        JTextField txtTitle = new JTextField();
-        JTextField txtDue = new JTextField();
-        JTextField txtDesc = new JTextField();
-
-        Object[] message = {
-            "Subject:", cbSubject, // 👈 ใช้ cbSubject แทน txtSubject
-            "Work:", txtTitle,
-            "Due date (DD-MM-YYYY):", txtDue,
-            "Description:", txtDesc
-        };
-
-        int option = JOptionPane.showConfirmDialog(
-            this, 
-            message, 
-            "Add new work", 
-            JOptionPane.OK_CANCEL_OPTION,
-            JOptionPane.PLAIN_MESSAGE
-        );
-        
-        if (option == JOptionPane.OK_OPTION) {
-            // 2. รับค่ารายวิชาจากตัวเลือก หรือข้อความที่ผู้ใช้พิมพ์ใหม่
-            Object selectedObj = cbSubject.getSelectedItem();
-            String sub = (selectedObj != null) ? selectedObj.toString().trim() : "";
-            String title = txtTitle.getText().trim();
-            String due = txtDue.getText().trim();
-            String desc = txtDesc.getText().trim();
-
-            if (!sub.isEmpty() && !title.isEmpty()) {
-                
-                // ตรวจสอบความถูกต้องของวันที่ (หากมีการกรอก Due Date)
-                if (!due.isEmpty() && Task.parseDueDate(due) == null) {
-                    JOptionPane.showMessageDialog(
-                        this,
-                        "Invalid date format! Please enter date as DD-MM-YYYY (e.g. 15-10-2026).",
-                        "Invalid Date",
-                        JOptionPane.WARNING_MESSAGE
-                    );
-                    return;
-                }
-
-                Task newTask = new Task(
-                    sub,
-                    title,
-                    due.isEmpty() ? "Not specified" : due,
-                    "In Progress",
-                    desc.isEmpty() ? "-" : desc
-                );
-                
-                dataRepository.addTask(newTask);
-                refreshAllData();
-            } else {
-                JOptionPane.showMessageDialog(
-                    this,
-                    "Please enter the subject and assignment name.",
-                    "Notification",
-                    JOptionPane.WARNING_MESSAGE
-                );
-            }
-        }
-    }
+    
 }
