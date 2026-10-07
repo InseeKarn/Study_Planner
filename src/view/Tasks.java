@@ -130,7 +130,7 @@ public class Tasks extends JPanel {
         Object[] message = {
             "Subject:", txtSubject,
             "Work:", txtTitle,
-            "Due date (DD-MM-YYYY):", txtDue, // เปลี่ยนตรงนี้
+            "Due date (DD-MM-YYYY):", txtDue,
             "Description:", txtDesc
         };
 
@@ -149,6 +149,18 @@ public class Tasks extends JPanel {
             String desc = txtDesc.getText().trim();
 
             if (!sub.isEmpty() && !title.isEmpty()) {
+                
+                // ตรวจสอบความถูกต้องของวันที่ (หากมีการกรอก Due Date)
+                if (!due.isEmpty() && Task.parseDueDate(due) == null) {
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "Invalid date format! Please enter date as DD-MM-YYYY",
+                        "Invalid Date",
+                        JOptionPane.WARNING_MESSAGE
+                    );
+                    return; // ยกเลิกการเพิ่มงานเพื่อให้ออกไปแก้ไขวันที่
+                }
+
                 Task newTask = new Task(
                     sub,
                     title,
