@@ -95,17 +95,15 @@ public class Task {
     public static LocalDate parseDueDate(String dateStr) {
         if (dateStr == null || dateStr.trim().isEmpty()) return null;
         dateStr = dateStr.trim();
-        try {
-            if (dateStr.matches("\\d{1,2}-\\d{1,2}-\\d{4}")) {
-                return LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("d-M-yyyy"));
-            } else if (dateStr.matches("\\d{1,2}/\\d{1,2}/\\d{4}")) {
-                return LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("d/M/yyyy"));
-            } else if (dateStr.matches("\\d{4}-\\d{1,2}-\\d{1,2}")) {
-                return LocalDate.parse(dateStr);
-            }
-        } catch (Exception ignored) {}
-        return null;
+        
+        //กำหนดรูปแบบวันที่
+        String[] patterns = {"d-M-yyyy"};
+        for (String pattern : patterns) {
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+                return LocalDate.parse(dateStr, formatter);
+            } catch (Exception ignored) {}
+        }
+        return null; // คืนค่า null หากรูปแบบวันที่ไม่ถูกต้อง
     }
-
-    
 }
