@@ -122,13 +122,29 @@ public class Tasks extends JPanel {
     }
     
     private void showAddTaskDialog() {
-        JTextField txtSubject = new JTextField();
+        // 1. ดึงรายชื่อวิชาที่มีอยู่ในระบบเดิมมาใส่ใน ComboBox (ไม่ซ้ำกัน)
+        JComboBox<String> cbSubject = new JComboBox<>();
+        cbSubject.setEditable(true); // 👈 เปิดให้ผู้ใช้พิมพ์รายชื่อวิชาใหม่ได้เอง
+
+        java.util.List<String> existingSubjects = new java.util.ArrayList<>();
+        for (Task t : dataRepository.getAllTasks()) {
+            String sub = t.getSubject();
+            if (sub != null && !sub.trim().isEmpty() && !existingSubjects.contains(sub.trim())) {
+                existingSubjects.add(sub.trim());
+            }
+        }
+        
+        for (String sub : existingSubjects) {
+            cbSubject.addItem(sub);
+        }
+        cbSubject.setSelectedItem(""); // ตั้งให้เริ่มต้นเป็นช่องว่างเปล่า
+
         JTextField txtTitle = new JTextField();
         JTextField txtDue = new JTextField();
         JTextField txtDesc = new JTextField();
 
         Object[] message = {
-            "Subject:", txtSubject,
+            "Subject:", cbSubject, // 👈 ใช้ cbSubject แทน txtSubject
             "Work:", txtTitle,
             "Due date (DD-MM-YYYY):", txtDue,
             "Description:", txtDesc
@@ -143,7 +159,9 @@ public class Tasks extends JPanel {
         );
         
         if (option == JOptionPane.OK_OPTION) {
-            String sub = txtSubject.getText().trim();
+            // 2. รับค่ารายวิชาจากตัวเลือก หรือข้อความที่ผู้ใช้พิมพ์ใหม่
+            Object selectedObj = cbSubject.getSelectedItem();
+            String sub = (selectedObj != null) ? selectedObj.toString().trim() : "";
             String title = txtTitle.getText().trim();
             String due = txtDue.getText().trim();
             String desc = txtDesc.getText().trim();
@@ -154,11 +172,11 @@ public class Tasks extends JPanel {
                 if (!due.isEmpty() && Task.parseDueDate(due) == null) {
                     JOptionPane.showMessageDialog(
                         this,
-                        "Invalid date format! Please enter date as DD-MM-YYYY",
+                        "Invalid date format! Please enter date as DD-MM-YYYY (e.g. 15-10-2026).",
                         "Invalid Date",
                         JOptionPane.WARNING_MESSAGE
                     );
-                    return; // ยกเลิกการเพิ่มงานเพื่อให้ออกไปแก้ไขวันที่
+                    return;
                 }
 
                 Task newTask = new Task(

@@ -91,7 +91,7 @@ public class Task {
         return "In Progress";                   // 🟡 ดำเนินการอยู่ (> 3 วัน)
     }
 
-    // ตัวช่วยแปลง String วันที่ รองรับ DD-MM-YYYY, DD/MM/YYYY และ YYYY-MM-DD
+    // ตัวช่วยแปลง String วันที่ รองรับ DD-MM-YYYY
     public static LocalDate parseDueDate(String dateStr) {
         if (dateStr == null || dateStr.trim().isEmpty()) return null;
         dateStr = dateStr.trim();
