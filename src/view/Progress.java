@@ -16,11 +16,7 @@ public class Progress extends JPanel {
         setBackground(cardBg);
         setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(
-                		new Color(230, 220, 210)),
-                		"Weekly Progress",
-						0,
-						0,
-						SansSerif
+                		new Color(230, 220, 210))
 				));
 
         JLabel progressTitle = new JLabel("Weekly Progress", SwingConstants.CENTER);

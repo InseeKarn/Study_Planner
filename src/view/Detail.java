@@ -16,6 +16,10 @@ public class Detail extends JPanel {
     //Font
     private Font SansSerif = new Font("SansSerif", Font.BOLD, 12);
 
+    private final Color textPrimary = new Color(242, 242, 242);
+    private final Color textSecondary = new Color(153, 153, 153);
+    
+    
     public Detail(Color cardBg) {
         setLayout(new GridLayout(5, 1, 2, 4));
         setPreferredSize(new Dimension(290, 160));
@@ -23,11 +27,12 @@ public class Detail extends JPanel {
         setBackground(cardBg);
         
         setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(230, 220, 210)),
+                BorderFactory.createLineBorder(Color.WHITE),
                 "Details",
                 0,
                 0,
-                SansSerif
+                SansSerif,
+                textPrimary
         ));
 
         detailSubjectLabel = new JLabel("Subject: -");
@@ -41,6 +46,12 @@ public class Detail extends JPanel {
         detailDueLabel.setFont(SansSerif);
         detailDescLabel.setFont(SansSerif);
         detailStatusLabel.setFont(SansSerif);
+        
+        detailSubjectLabel.setForeground(textSecondary);
+        detailTitleLabel.setForeground(textSecondary);
+        detailDueLabel.setForeground(textSecondary);
+        detailDescLabel.setForeground(textSecondary);
+        detailStatusLabel.setForeground(textSecondary);
 
         add(detailSubjectLabel);
         add(detailTitleLabel);

@@ -68,7 +68,6 @@ public class Task {
     }
 
     // --- คำนวณข้อความประจำสถานะ ---
-    // --- คำนวณข้อความประจำสถานะ ---
     public String getStatusText() {
         if (isCompleted()) {
             return "Completed";
@@ -104,6 +103,6 @@ public class Task {
                 return LocalDate.parse(dateStr, formatter);
             } catch (Exception ignored) {}
         }
-        return null; // คืนค่า null หากรูปแบบวันที่ไม่ถูกต้อง
+        return null;
     }
 }
