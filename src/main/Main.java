@@ -46,12 +46,12 @@ public class Main extends JFrame {
 		);
         
         //Schedule Page
-        JPanel schedulePage = new Schedule();
+        Schedule schedule = new Schedule(dataRepository);
         
         //Tasks Page
         JPanel tasksPage = new Tasks(dataRepository);
 
-        contentCardPanel.add(schedulePage, "SCHEDULE");
+        contentCardPanel.add(schedule, "SCHEDULE");
         contentCardPanel.add(tasksPage, "TASKS");
         
         pageCardLayout.show(contentCardPanel, "TASKS");
