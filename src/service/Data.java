@@ -15,8 +15,11 @@ import java.lang.reflect.Type;
 
 import model.Task;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 public class Data {
-	
+	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private final List<Task> taskList = new ArrayList<>();
 
     private final Gson gson = new GsonBuilder()
@@ -114,6 +117,8 @@ public class Data {
         taskList.remove(task);
         saveToJson();
     }
-
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
+    }
 
 }

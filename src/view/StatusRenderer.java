@@ -1,8 +1,9 @@
-package model;
+package view;
 
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
+import model.Task;
 
 public class StatusRenderer extends JPanel implements TableCellRenderer {
     private final JLabel label;
