@@ -19,6 +19,7 @@ public class Task_Table extends JPanel {
     public interface TaskTableListener {
         void onSubmitClicked(Task task);
         void onDeleteClicked(Task task);
+        void onEditClicked(Task task);
         void onTaskSelected(Task task); // คอลแบ็กเมื่อมีการคลิกเลือกแถวในตาราง
     }
 
@@ -35,14 +36,13 @@ public class Task_Table extends JPanel {
                 "Assignment",
                 "Due Date",
                 "Status",
-                "Submit",
-                "Delete"
+                "..."
         };
 
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 4 || column == 5;
+                return column == 4;
             }
         };
 
@@ -91,12 +91,9 @@ public class Task_Table extends JPanel {
         // คอลัมน์ 3 (Status) - ใช้ StatusRenderer แสดงกล่องสี
         taskTable.getColumnModel().getColumn(3).setCellRenderer(new StatusRenderer());
 
-        // คอลัมน์ 4 และ 5 (Submit, Delete) - ปุ่มกด
+        // คอลัมน์ 4: เมนู ... รวม Submit / Edit / Delete
         taskTable.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
-        taskTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox(), false));
-
-        taskTable.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer());
-        taskTable.getColumnModel().getColumn(5).setCellEditor(new ButtonEditor(new JCheckBox(), true));
+        taskTable.getColumnModel().getColumn(4).setCellEditor(new MenuButtonEditor(new JCheckBox()));
 
         // Listener สำหรับตรวจจับการเลือกแถวในตาราง
         taskTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -127,14 +124,12 @@ public class Task_Table extends JPanel {
         tableModel.setRowCount(0);
 
         for (Task task : tasks) {
-            String submitText = task.isCompleted() ? "✓ Submit (Edit)" : "Submit";
             tableModel.addRow(new Object[] {
                     task,               // Column 0: Subject (ส่ง Task Object)
                     task.getTitle(),    // Column 1: Assignment
                     task.getDueDate(),  // Column 2: Due Date
                     task,               // Column 3: Status (ส่ง Task Object ให้ StatusRenderer นำไปคำนวณสี)
-                    submitText,         // Column 4: Submit
-                    "Delete"            // Column 5: Delete
+                    "..."               // Column 4: Actions
             });
         }
     }
@@ -153,43 +148,38 @@ public class Task_Table extends JPanel {
         }
     }
 
-    private class ButtonEditor extends DefaultCellEditor {
-        private final JButton button;
-        private final boolean deleteButton;
+    private class MenuButtonEditor extends DefaultCellEditor {
+        private final JButton button = new JButton("...");
         private int row;
 
-        public ButtonEditor(JCheckBox checkBox, boolean deleteButton) {
+        public MenuButtonEditor(JCheckBox checkBox) {
             super(checkBox);
-            this.deleteButton = deleteButton;
-            button = new JButton();
             button.setFocusPainted(false);
-
             button.addActionListener(e -> {
-                fireEditingStopped();
-                if (listener == null || row < 0 || row >= tableModel.getRowCount()) {
-                    return;
-                }
-
+                if (listener == null || row < 0 || row >= tableModel.getRowCount()) { fireEditingStopped(); return; }
                 Task task = (Task) tableModel.getValueAt(row, 0);
-                if (deleteButton) {
-                    listener.onDeleteClicked(task);
-                } else {
-                    listener.onSubmitClicked(task);
-                }
+                JPopupMenu menu = new JPopupMenu();
+                JMenuItem submitItem = new JMenuItem("Submit");
+                JMenuItem editItem = new JMenuItem("Edit");
+                JMenuItem deleteItem = new JMenuItem("Delete");
+                submitItem.addActionListener(ev -> listener.onSubmitClicked(task));
+                editItem.addActionListener(ev -> listener.onEditClicked(task));
+                deleteItem.addActionListener(ev -> listener.onDeleteClicked(task));
+                menu.add(submitItem);
+                menu.add(editItem);
+                menu.add(deleteItem);
+                menu.show(button, 0, button.getHeight());
+                fireEditingStopped();
             });
         }
 
         @Override
-        public Component getTableCellEditorComponent(
-                JTable table, Object value, boolean isSelected, int row, int column) {
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             this.row = row;
-            button.setText(value == null ? "" : value.toString());
             return button;
         }
 
         @Override
-        public Object getCellEditorValue() {
-            return button.getText();
-        }
+        public Object getCellEditorValue() { return "..."; }
     }
 }

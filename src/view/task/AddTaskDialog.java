@@ -3,17 +3,22 @@ package view.task;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.text.*;
-
 import javax.swing.*;
-
+import javax.swing.text.*;
 import model.Task;
 import service.Data;
 
 public class AddTaskDialog {
 
     public static Task showDialog(Component parent, Data dataRepository) {
+        return showDialog(parent, dataRepository, null);
+    }
+
+    public static Task showEditDialog(Component parent, Data dataRepository, Task task) {
+        return showDialog(parent, dataRepository, task);
+    }
+
+    private static Task showDialog(Component parent, Data dataRepository, Task editTask) {
 
         JComboBox<String> cbSubject = new JComboBox<>();
         cbSubject.setEditable(true);
@@ -36,10 +41,10 @@ public class AddTaskDialog {
             cbSubject.addItem(sub);
         }
 
-        cbSubject.setSelectedItem("");
+        cbSubject.setSelectedItem(editTask == null ? "" : editTask.getSubject());
 
         // Work
-        JTextField txtTitle = new JTextField();
+        JTextField txtTitle = new JTextField(editTask == null ? "" : editTask.getTitle());
 
         // Date
         JTextField txtDay = new JTextField(2);
@@ -49,6 +54,14 @@ public class AddTaskDialog {
         onlyNumbers(txtDay);
         onlyNumbers(txtMonth);
         onlyNumbers(txtYear);
+        if (editTask != null && editTask.getDueDate() != null && !editTask.getDueDate().equals("Not specified")) {
+            String[] dateParts = editTask.getDueDate().split("-");
+            if (dateParts.length == 3) {
+                txtDay.setText(dateParts[0]);
+                txtMonth.setText(dateParts[1]);
+                txtYear.setText(dateParts[2]);
+            }
+        }
 
         txtDay.setHorizontalAlignment(JTextField.CENTER);
         txtMonth.setHorizontalAlignment(JTextField.CENTER);
@@ -67,7 +80,7 @@ public class AddTaskDialog {
         datePanel.add(txtYear);
 
         // Description
-        JTextField txtDesc = new JTextField();
+        JTextField txtDesc = new JTextField(editTask == null || "-".equals(editTask.getDescription()) ? "" : editTask.getDescription());
 
         // Auto move
         autoNextField(txtDay, txtMonth, 2);
@@ -84,7 +97,7 @@ public class AddTaskDialog {
         int option = JOptionPane.showConfirmDialog(
             parent,
             message,
-            "Add new work",
+            editTask == null ? "Add new work" : "Edit assignment",
             JOptionPane.OK_CANCEL_OPTION,
             JOptionPane.PLAIN_MESSAGE
         );
@@ -145,7 +158,7 @@ public class AddTaskDialog {
             sub,
             title,
             due.isEmpty() ? "Not specified" : due,
-            "In Progress",
+            editTask == null ? "In Progress" : editTask.getStatus(),
             desc.isEmpty() ? "-" : desc
         );
     }

@@ -62,6 +62,20 @@ public class Tasks extends JPanel {
                 }
 
                 @Override
+                public void onEditClicked(Task task) {
+                    Task editedTask = AddTaskDialog.showEditDialog(Tasks.this, dataRepository, task);
+                    if (editedTask != null) {
+                        task.setSubject(editedTask.getSubject());
+                        task.setTitle(editedTask.getTitle());
+                        task.setDueDate(editedTask.getDueDate());
+                        task.setDescription(editedTask.getDescription());
+                        dataRepository.saveToJson();
+                        refreshAllData();
+                        detailCardPanel.updateDetails(task);
+                    }
+                }
+
+                @Override
                 public void onTaskSelected(Task task) {
                     detailCardPanel.updateDetails(task);
                 }
