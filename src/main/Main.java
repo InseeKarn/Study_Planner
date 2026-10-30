@@ -3,14 +3,10 @@ package main;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import service.Data;
-//header import
-import view.Header;
-
-//Pages import
-import view.Schedule;
-import view.Tasks;
+import view.schedule.Schedule;
+import view.task.Header;
+import view.task.Tasks;
 
 public class Main extends JFrame {
 	

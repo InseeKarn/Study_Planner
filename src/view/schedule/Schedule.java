@@ -1,4 +1,4 @@
-package view;
+package view.schedule;
 
 import java.awt.*;
 import java.time.LocalDate;
@@ -8,7 +8,6 @@ import java.util.Locale;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import service.Data;
-import view.schedule.*;
 
 public class Schedule extends JPanel {
 

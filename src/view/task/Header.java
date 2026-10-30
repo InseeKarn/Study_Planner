@@ -1,4 +1,4 @@
-package view;
+package view.task;
 
 import java.awt.*;
 import java.time.LocalDate;
