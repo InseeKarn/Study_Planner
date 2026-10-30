@@ -10,6 +10,7 @@ public class Task {
     private String dueDate;
     private String status;
     private String description;
+    private boolean isImportant = false;
 
     public Task(String subject, String title, String dueDate, String status, String description) {
         this.subject = subject;
@@ -34,6 +35,9 @@ public class Task {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    
+    public boolean isImportant() { return isImportant; }
+    public void setImportant(boolean important) { this.isImportant = important; }
 
     // ตรวจสอบการเสร็จสิ้นผ่าน Status.COMPLETED
     public boolean isCompleted() {

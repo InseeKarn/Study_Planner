@@ -74,6 +74,14 @@ public class Tasks extends JPanel {
                         detailCardPanel.updateDetails(task);
                     }
                 }
+                
+                @Override
+                public void onImportantClicked(Task task) {
+                    task.setImportant(!task.isImportant());
+
+                    dataRepository.saveToJson();
+                    refreshAllData();
+                }
 
                 @Override
                 public void onTaskSelected(Task task) {

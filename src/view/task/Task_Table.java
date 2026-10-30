@@ -1,6 +1,8 @@
 package view.task;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -15,11 +17,13 @@ public class Task_Table extends JPanel {
     private final Color textPrimary = new Color(242, 242, 242);
     private final Color textSecondary = new Color(153, 153, 153);
     private final Color elementDark = new Color(32, 32, 32);
+    private final Color cardBg = new Color(24, 24, 24);
 
     public interface TaskTableListener {
         void onSubmitClicked(Task task);
         void onDeleteClicked(Task task);
         void onEditClicked(Task task);
+        void onImportantClicked(Task task);
         void onTaskSelected(Task task); // คอลแบ็กเมื่อมีการคลิกเลือกแถวในตาราง
     }
 
@@ -60,19 +64,7 @@ public class Task_Table extends JPanel {
         // --- ตั้งค่า Cell Renderers ---
 
         // คอลัมน์ 0 (Subject)
-        taskTable.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(
-                    JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                if (value instanceof Task) {
-                    value = ((Task) value).getSubject();
-                }
-                setHorizontalAlignment(JLabel.CENTER);
-                setForeground(textPrimary);
-                setBackground(isSelected ? new Color(45, 45, 45) : cardBg);
-                return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            }
-        });
+        taskTable.getColumnModel().getColumn(0).setCellRenderer(new SubjectRenderer());
 
         // คอลัมน์ 1 และ 2 (Assignment, Due Date)
         for (int i = 1; i <= 2; i++) {
@@ -94,8 +86,28 @@ public class Task_Table extends JPanel {
         // คอลัมน์ 4: เมนู ... รวม Submit / Edit / Delete
         taskTable.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
         taskTable.getColumnModel().getColumn(4).setCellEditor(new MenuButtonEditor(new JCheckBox()));
+        taskTable.getColumnModel().getColumn(4).setPreferredWidth(50);
+        taskTable.getColumnModel().getColumn(4).setMaxWidth(60);
+        taskTable.getColumnModel().getColumn(4).setMinWidth(45);
 
         // Listener สำหรับตรวจจับการเลือกแถวในตาราง
+        
+        taskTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = taskTable.rowAtPoint(e.getPoint());
+                int column = taskTable.columnAtPoint(e.getPoint());
+
+                if (row < 0 || column != 0) return;
+
+                Task task = (Task) tableModel.getValueAt(row, 0);
+
+                if (listener != null) {
+                    listener.onImportantClicked(task);
+                }
+            }
+        });
+        
         taskTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -114,6 +126,58 @@ public class Task_Table extends JPanel {
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 220, 210), 1));
 
         add(scrollPane, BorderLayout.CENTER);
+    }
+    
+    private class SubjectRenderer extends JPanel implements TableCellRenderer {
+
+        private final JLabel starLabel = new JLabel();
+        private final JLabel subjectLabel = new JLabel();
+
+        public SubjectRenderer() {
+            setLayout(new FlowLayout(FlowLayout.CENTER, 4, 0));
+            setOpaque(true);
+
+            starLabel.setPreferredSize(new Dimension(18, 22));
+            starLabel.setHorizontalAlignment(JLabel.CENTER);
+            starLabel.setFont(new Font("SansSerif", Font.PLAIN, 19));
+
+            subjectLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+
+            add(starLabel);
+            add(subjectLabel);
+        }
+        
+        
+
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable table, Object value, boolean isSelected,
+                boolean hasFocus, int row, int column) {
+
+            if (value instanceof Task) {
+                Task task = (Task) value;
+
+                starLabel.setText(task.isImportant() ? "★" : "☆");
+                
+                
+
+                starLabel.setForeground(
+                    task.isImportant()
+                        ? new Color(255, 212, 59)
+                        : textSecondary
+                );
+
+                subjectLabel.setText(task.getSubject());
+            }
+
+            subjectLabel.setForeground(textPrimary);
+
+            setBackground(
+                isSelected ? new Color(45, 45, 45) : cardBg
+            );
+
+            return this;
+        }
     }
 
     public void setTaskTableListener(TaskTableListener listener) {
@@ -136,14 +200,27 @@ public class Task_Table extends JPanel {
 
     private class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
+        	
+        	
             setOpaque(true);
             setFocusPainted(false);
+            setBorderPainted(false);
+            setContentAreaFilled(true);
+
+            setText("...");
+            setFont(new Font("SansSerif", Font.BOLD, 14));
+            setForeground(textPrimary);
+            setBackground(cardBg);
+
+            setPreferredSize(new Dimension(32, 26));
         }
 
         @Override
         public Component getTableCellRendererComponent(
-                JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText(value == null ? "" : value.toString());
+                JTable table, Object value, boolean isSelected,
+                boolean hasFocus, int row, int column) {
+
+            setText("...");
             return this;
         }
     }
@@ -159,15 +236,20 @@ public class Task_Table extends JPanel {
                 if (listener == null || row < 0 || row >= tableModel.getRowCount()) { fireEditingStopped(); return; }
                 Task task = (Task) tableModel.getValueAt(row, 0);
                 JPopupMenu menu = new JPopupMenu();
+                
+                
                 JMenuItem submitItem = new JMenuItem("Submit");
                 JMenuItem editItem = new JMenuItem("Edit");
                 JMenuItem deleteItem = new JMenuItem("Delete");
+                
+                
                 submitItem.addActionListener(ev -> listener.onSubmitClicked(task));
                 editItem.addActionListener(ev -> listener.onEditClicked(task));
                 deleteItem.addActionListener(ev -> listener.onDeleteClicked(task));
                 menu.add(submitItem);
                 menu.add(editItem);
                 menu.add(deleteItem);
+                
                 menu.show(button, 0, button.getHeight());
                 fireEditingStopped();
             });
