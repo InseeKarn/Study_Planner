@@ -1,7 +1,7 @@
-package view;
+package view.task;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class Progress extends JPanel {
     private final JLabel percentLabel;
