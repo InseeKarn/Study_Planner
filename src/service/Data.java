@@ -33,33 +33,40 @@ public class Data {
     }
 
     // --- ดึงงานทั้งหมด พร้อมจัดเรียงตามลำดับความด่วนและวันกำหนดส่งให้อัตโนมัติ ---
-    public List<Task> getAllTasks() {
-        taskList.sort((t1, t2) -> {
-            // 1. เรียงตามลำดับความสำคัญของสถานะ (Overdue -> Due Today -> Urgent -> Warning -> Normal -> No Due Date -> Completed)
-            int p1 = Status.getPriorityOrder(t1.isCompleted(), t1.getDueDate());
-            int p2 = Status.getPriorityOrder(t2.isCompleted(), t2.getDueDate());
 
-            if (p1 != p2) {
-                return Integer.compare(p1, p2);
-            }
+public List<Task> getAllTasks() {
+    taskList.sort((t1, t2) -> {
 
-            // 2. ถ้าสถานะเท่ากัน ให้เรียงตามวันกำหนดส่ง (วันที่ถึงก่อนขึ้นก่อน)
-            LocalDate d1 = Task.parseDueDate(t1.getDueDate());
-            LocalDate d2 = Task.parseDueDate(t2.getDueDate());
+        // 1. งานติดดาวขึ้นก่อน
+        if (t1.isImportant() != t2.isImportant()) {
+            return Boolean.compare(t2.isImportant(), t1.isImportant());
+        }
 
-            if (d1 != null && d2 != null) {
-                return d1.compareTo(d2);
-            } else if (d1 != null) {
-                return -1;
-            } else if (d2 != null) {
-                return 1;
-            }
+        // 2. เรียงตามสถานะเหมือนเดิม
+        int p1 = Status.getPriorityOrder(t1.isCompleted(), t1.getDueDate());
+        int p2 = Status.getPriorityOrder(t2.isCompleted(), t2.getDueDate());
 
-            return 0;
-        });
+        if (p1 != p2) {
+            return Integer.compare(p1, p2);
+        }
 
-        return taskList;
-    }
+        // 3. เรียงตามวันกำหนดส่งเหมือนเดิม
+        LocalDate d1 = Task.parseDueDate(t1.getDueDate());
+        LocalDate d2 = Task.parseDueDate(t2.getDueDate());
+
+        if (d1 != null && d2 != null) {
+            return d1.compareTo(d2);
+        } else if (d1 != null) {
+            return -1;
+        } else if (d2 != null) {
+            return 1;
+        }
+
+        return 0;
+    });
+
+    return taskList;
+}
 
     // --- ดึงรายการงานเฉพาะวันที่กำหนด (สำหรับ Schedule - Month View) ---
     public List<Task> getTasksForDate(LocalDate date) {
