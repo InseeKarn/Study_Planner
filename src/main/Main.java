@@ -7,6 +7,7 @@ import service.Data;
 import view.schedule.Schedule;
 import view.task.Header;
 import view.task.Tasks;
+import service.NotificationService;
 
 public class Main extends JFrame {
 	
@@ -16,8 +17,14 @@ public class Main extends JFrame {
 
 	// Data
     private final Data dataRepository = new Data();
+    
+
 
     public Main() {
+    	
+        // Start Notification Service
+        NotificationService.start(dataRepository);
+    	
         setTitle("Study Planner");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1100, 720);
@@ -43,6 +50,8 @@ public class Main extends JFrame {
         
         //Schedule Page
         Schedule schedule = new Schedule(dataRepository);
+        
+        
         
         //Tasks Page
         JPanel tasksPage = new Tasks(dataRepository);
