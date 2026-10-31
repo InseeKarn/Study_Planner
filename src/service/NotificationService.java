@@ -1,4 +1,3 @@
-
 package service;
 
 import java.io.BufferedReader;
@@ -14,7 +13,10 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import javax.swing.SwingUtilities;
 import model.Task;
+import view.notification.NotificationPanel;
+import view.notification.NotificationWindow;
 
 public class NotificationService {
 
@@ -51,7 +53,7 @@ public class NotificationService {
             return thread;
         });
 
-        // ตรวจทันทีเมื่อเริ่มโปรแกรม
+        // ตรวจสอบงานทันทีเมื่อเริ่มโปรแกรม และตรวจซ้ำทุก 1 นาที
         scheduler.scheduleAtFixedRate(
                 () -> checkTasks(data),
                 0,
@@ -68,13 +70,22 @@ public class NotificationService {
         }
     }
 
-    // ตรวจสอบงานทั้งหมด
+    // เมธอดสำหรับสั่งเปิด Floating Notification Window มุมขวาล่างของ Desktop โดยตรง
+    public static void showDesktopNotification(Data data) {
+        SwingUtilities.invokeLater(() -> {
+            NotificationPanel panel = new NotificationPanel(data);
+            NotificationWindow.showNotification(panel);
+        });
+    }
+
+    // ตรวจสอบงานทั้งหมดเพื่อส่งแจ้งเตือน
     private static void checkTasks(Data data) {
 
         try {
             LocalDate today = LocalDate.now();
 
             List<Task> tasks = data.getAllTasks();
+            boolean hasNewNotification = false;
 
             for (Task task : tasks) {
 
@@ -87,42 +98,53 @@ public class NotificationService {
 
                 String taskKey = createTaskKey(task);
 
-                // 1. งานติดดาว: แจ้งวันละครั้ง
+                // 1. งานติดดาว: แจ้งเตือนวันละครั้ง
                 if (task.isImportant()) {
-                    notifyOnce(
+                    if (notifyOnce(
                             task,
                             taskKey,
                             "STARRED",
                             "Starred task",
                             "This task is marked as important."
-                    );
+                    )) {
+                        hasNewNotification = true;
+                    }
                 }
 
                 if (dueDate == null) {
                     continue;
                 }
 
-                // 2. งานที่เลยกำหนดส่ง: แจ้งวันละครั้ง
+                // 2. งานที่เลยกำหนดส่ง: แจ้งเตือนวันละครั้ง
                 if (dueDate.isBefore(today)) {
-                    notifyOnce(
+                    if (notifyOnce(
                             task,
                             taskKey,
                             "OVERDUE",
                             "Overdue task",
                             "This task is past its due date."
-                    );
+                    )) {
+                        hasNewNotification = true;
+                    }
                 }
 
                 // 3. งานที่เหลืออีก 1 วัน
                 if (dueDate.equals(today.plusDays(1))) {
-                    notifyOnce(
+                    if (notifyOnce(
                             task,
                             taskKey,
                             "TOMORROW",
                             "Due tomorrow",
                             "This task is due in 1 day."
-                    );
+                    )) {
+                        hasNewNotification = true;
+                    }
                 }
+            }
+
+            // หากมีรายการแจ้งเตือนใหม่ ให้เรียกแสดง Notification Window มุมขวาล่างของ Desktop
+            if (hasNewNotification) {
+                showDesktopNotification(data);
             }
 
         } catch (Exception e) {
@@ -132,7 +154,7 @@ public class NotificationService {
     }
 
     // ป้องกันการแจ้งซ้ำในวันเดียวกัน
-    private static void notifyOnce(
+    private static boolean notifyOnce(
             Task task,
             String taskKey,
             String type,
@@ -145,7 +167,7 @@ public class NotificationService {
         String historyKey = today + "_" + type + "_" + taskKey;
 
         if (history.containsKey(historyKey)) {
-            return;
+            return false;
         }
 
         String due = task.getDueDate() == null
@@ -158,14 +180,17 @@ public class NotificationService {
                 + " | Due: " + due
                 + " | " + message;
 
-        if (showNotification(text)) {
-            history.setProperty(historyKey, "sent");
-            saveHistory();
-        }
+        // ปิดการเรียกใช้ Windows Toast แบบดั้งเดิม เพื่อไม่ให้เด้งป๊อปอัปซ้อนกัน
+        // showToastNotification(text);
+
+        // บันทึกประวัติ
+        history.setProperty(historyKey, "sent");
+        saveHistory();
+        return true;
     }
 
-    // ส่ง Windows Toast
-    private static boolean showNotification(String message) {
+    // ส่ง Windows Toast ผ่าน WinToast.exe (คงไว้เป็น utility เผื่อเรียกใช้ในอนาคต)
+    private static boolean showToastNotification(String message) {
 
         try {
             if (!Files.exists(EXE)) {

@@ -1,50 +1,18 @@
 [
   {
-    "subject": "data",
-    "title": "0",
-    "dueDate": "29-10-2026",
+    "subject": "Data",
+    "title": "Lab1",
+    "dueDate": "01-11-2026",
     "status": "In Progress",
-    "description": "-",
-    "isImportant": false
+    "description": "pldlcpspv,",
+    "isImportant": true
   },
   {
-    "subject": "data",
-    "title": "1",
-    "dueDate": "31-10-2026",
+    "subject": "Data",
+    "title": "Lab2",
+    "dueDate": "20-11-2026",
     "status": "In Progress",
-    "description": "-",
-    "isImportant": false
-  },
-  {
-    "subject": "data",
-    "title": "2",
-    "dueDate": "1-11-2026",
-    "status": "In Progress",
-    "description": "-",
-    "isImportant": false
-  },
-  {
-    "subject": "data",
-    "title": "2",
-    "dueDate": "1-11-2026",
-    "status": "In Progress",
-    "description": "-",
-    "isImportant": false
-  },
-  {
-    "subject": "data",
-    "title": "3",
-    "dueDate": "15-11-2026",
-    "status": "In Progress",
-    "description": "-",
-    "isImportant": false
-  },
-  {
-    "subject": "data",
-    "title": "4",
-    "dueDate": "Not specified",
-    "status": "In Progress",
-    "description": "-",
+    "description": "fervrbtmrmtbmogtmobnotmnmt",
     "isImportant": false
   }
 ]

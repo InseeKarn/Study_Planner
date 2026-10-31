@@ -16,12 +16,7 @@ public class Tasks extends JPanel {
     // Color
     private final Color bgDark = new Color(17, 17, 17);
     private final Color cardDark = new Color(24, 24, 24);
-    private final Color elementDark = new Color(32, 32, 32);
-    private final Color borderDark = new Color(42, 42, 42);
-
     private final Color textPrimary = new Color(242, 242, 242);
-    private final Color textSecondary = new Color(153, 153, 153);
-
     private final Color accentGreen = new Color(143, 214, 148);
         
     public Tasks(Data dataRepository) {
@@ -40,7 +35,6 @@ public class Tasks extends JPanel {
         // Task Table
         taskTablePanel = new Task_Table(cardDark);
         
-        // รวม Filter + Table ไว้ในพาเนลเดียวกัน
         JPanel tableWithFilter = new JPanel(new BorderLayout());
         tableWithFilter.setOpaque(false);
         tableWithFilter.add(filterPanel, BorderLayout.NORTH);
@@ -91,7 +85,6 @@ public class Tasks extends JPanel {
                 @Override
                 public void onImportantClicked(Task task) {
                     task.setImportant(!task.isImportant());
-
                     dataRepository.saveToJson();
                     refreshAllData();
                 }
@@ -103,7 +96,7 @@ public class Tasks extends JPanel {
             }
         );
         
-        // Right Side / Details & Progress position
+        // Right Side Panel
         JPanel rightSidePanel = new JPanel(new BorderLayout(0, 10));
         rightSidePanel.setOpaque(false);
         rightSidePanel.setPreferredSize(new Dimension(300, 0));
@@ -112,7 +105,6 @@ public class Tasks extends JPanel {
         cardsContainer.setLayout(new BoxLayout(cardsContainer, BoxLayout.Y_AXIS));
         cardsContainer.setOpaque(false);
         
-        // Details & Progress position
         detailCardPanel = new Detail(cardDark);
         progressCardPanel = new Progress(cardDark, textPrimary, accentGreen);
 
@@ -145,34 +137,26 @@ public class Tasks extends JPanel {
         rightSidePanel.add(cardsContainer, BorderLayout.NORTH);
         rightSidePanel.add(buttonBox, BorderLayout.SOUTH);
         
-        // Add to Tasks panel
         add(tableWithFilter, BorderLayout.CENTER);
         add(rightSidePanel, BorderLayout.EAST);
 
-        // Initial data
         refreshAllData();
     }
         
     private void refreshAllData() {
-        // อัปเดตรายการวิชาใน FilterPanel
         filterPanel.refreshSubjects();
 
-        // ดึงค่า filter ปัจจุบัน
         String filterStatus = filterPanel.getSelectedStatus();
         String filterSubject = filterPanel.getSelectedSubject();
 
-        // แสดงงานที่กรองแล้ว
         taskTablePanel.updateTable(
             dataRepository.getFilteredTasks(filterStatus, filterSubject)
         );
 
-        // Progress ยังคงแสดงจากงานทั้งหมด
         progressCardPanel.updateProgress(
             dataRepository.getProgressPercentage(),
             dataRepository.getCompletedCount(),
             dataRepository.getPendingCount()
         );
     }
-    
-    
 }

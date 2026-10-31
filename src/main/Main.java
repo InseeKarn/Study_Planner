@@ -10,55 +10,46 @@ import view.task.Header;
 import view.task.Tasks;
 
 public class Main extends JFrame {
-	
-    // Components
+
     private CardLayout pageCardLayout;
     private JPanel contentCardPanel;
-
-	// Data
     private final Data dataRepository = new Data();
-    
-
 
     public Main() {
-    	
         // Start Notification Service
         NotificationService.start(dataRepository);
-    	
+
+        // แสดง Floating Notification Carousel ที่มุมขวาล่างของ Desktop ทันทีที่เปิดโปรแกรม
+        NotificationService.showDesktopNotification(dataRepository);
+
         setTitle("Study Planner");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1100, 720);
         setLocationRelativeTo(null);
 
-        // Colors
+        // ปิด Background Thread เมื่อปิดหน้าต่าง
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                NotificationService.stop();
+            }
+        });
+
         Color bgDark = new Color(17, 17, 17);
-        
         JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
         mainPanel.setBackground(bgDark);
         mainPanel.setBorder(new EmptyBorder(15, 20, 15, 20));
 
-        // Content (CardLayout)
         pageCardLayout = new CardLayout();
         contentCardPanel = new JPanel(pageCardLayout);
         contentCardPanel.setOpaque(false);
-        
-        //header
-        Header headerPanel = new Header(
-        		pageCardLayout,
-        		contentCardPanel
-		);
-        
-        //Schedule Page
+
+        Header headerPanel = new Header(pageCardLayout, contentCardPanel);
         Schedule schedule = new Schedule(dataRepository);
-        
-        
-        
-        //Tasks Page
         JPanel tasksPage = new Tasks(dataRepository);
 
         contentCardPanel.add(schedule, "SCHEDULE");
         contentCardPanel.add(tasksPage, "TASKS");
-        
         pageCardLayout.show(contentCardPanel, "TASKS");
 
         mainPanel.add(headerPanel, BorderLayout.NORTH);
@@ -66,7 +57,6 @@ public class Main extends JFrame {
 
         add(mainPanel);
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
