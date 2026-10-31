@@ -7,17 +7,17 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/gson-2.14.0.jar"/>
+	<classpathentry kind="lib" path="lib/Collections-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/kotlin-stdlib-1.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/kotlin-stdlib-jdk7-1.9.0.jar"/>
 	<classpathentry kind="lib" path="lib/kotlin-stdlib-jdk8-1.9.0.jar"/>
 	<classpathentry kind="lib" path="lib/Notify-4.5.jar"/>
+	<classpathentry kind="lib" path="lib/ObjectPool-4.4.jar"/>
+	<classpathentry kind="lib" path="lib/OS-1.11.jar"/>
 	<classpathentry kind="lib" path="lib/PropertyLoader-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/SwingActiveRender-1.5.jar"/>
 	<classpathentry kind="lib" path="lib/TweenEngine-9.2.jar"/>
 	<classpathentry kind="lib" path="lib/Updates-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/Utilities-1.48.jar"/>
-	<classpathentry kind="lib" path="lib/kotlin-stdlib-1.9.0.jar"/>
-	<classpathentry kind="lib" path="lib/kotlin-stdlib-jdk7-1.9.0.jar"/>
-	<classpathentry kind="lib" path="lib/OS-1.11.jar"/>
-	<classpathentry kind="lib" path="lib/Collections-2.4.jar"/>
-	<classpathentry kind="lib" path="lib/ObjectPool-4.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

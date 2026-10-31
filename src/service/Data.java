@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -30,6 +31,76 @@ public class Data {
 
     public Data() {
         loadFromJson();
+    }
+
+    // --- ดึงรายชื่อวิชาที่ไม่ซ้ำกัน (สำหรับ Filter) ---
+    public List<String> getDistinctSubjects() {
+        List<String> subjects = new ArrayList<>();
+        for (Task t : taskList) {
+            String sub = t.getSubject();
+            if (sub != null && !sub.trim().isEmpty() && !subjects.contains(sub.trim())) {
+                subjects.add(sub.trim());
+            }
+        }
+        Collections.sort(subjects);
+        return subjects;
+    }
+
+    // --- กรองงานตามสถานะและวิชา ---
+    public List<Task> getFilteredTasks(String filterStatus, String filterSubject) {
+        List<Task> allTasks = getAllTasks();
+
+        boolean allStatus = (filterStatus == null || filterStatus.equals("All"));
+        boolean allSubject = (filterSubject == null || filterSubject.equals("All"));
+
+        if (allStatus && allSubject) {
+            return allTasks;
+        }
+
+        List<Task> filtered = new ArrayList<>();
+        for (Task task : allTasks) {
+            // ตรวจสอบเงื่อนไขสถานะ
+            if (!allStatus) {
+                String taskStatus = Status.calculateStatus(task.isCompleted(), task.getDueDate());
+                if (!matchesStatusFilter(taskStatus, filterStatus)) {
+                    continue;
+                }
+            }
+
+            // ตรวจสอบเงื่อนไขวิชา
+            if (!allSubject) {
+                if (task.getSubject() == null || !task.getSubject().trim().equals(filterSubject)) {
+                    continue;
+                }
+            }
+
+            filtered.add(task);
+        }
+        return filtered;
+    }
+
+    // จับคู่สถานะ filter กับสถานะจริงของงาน
+    private boolean matchesStatusFilter(String taskStatus, String filterStatus) {
+        switch (filterStatus) {
+            case "Completed":
+                return taskStatus.equals(Status.COMPLETED);
+            case "In Progress":
+                return !taskStatus.equals(Status.COMPLETED);
+            case "Overdue":
+                return taskStatus.equals(Status.OVERDUE);
+            case "Due Today":
+                return taskStatus.equals(Status.DUE_TODAY);
+            case "Urgent":
+                return taskStatus.equals(Status.URGENT);
+            case "Warning":
+                return taskStatus.equals(Status.WARNING);
+            case "Normal":
+                return taskStatus.equals(Status.NORMAL);
+            case "No Due Date":
+                return taskStatus.equals(Status.NO_DUE_DATE);
+            default:
+                return true;
+        }
     }
 
     // --- ดึงงานทั้งหมด พร้อมจัดเรียงตามลำดับความด่วนและวันกำหนดส่งให้อัตโนมัติ ---

@@ -4,10 +4,10 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import service.Data;
+import service.NotificationService;
 import view.schedule.Schedule;
 import view.task.Header;
 import view.task.Tasks;
-import service.NotificationService;
 
 public class Main extends JFrame {
 	

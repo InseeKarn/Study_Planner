@@ -11,6 +11,7 @@ public class Tasks extends JPanel {
     private Task_Table taskTablePanel;
     private Detail detailCardPanel;
     private Progress progressCardPanel;
+    private FilterPanel filterPanel;
     
     // Color
     private final Color bgDark = new Color(17, 17, 17);
@@ -30,8 +31,20 @@ public class Tasks extends JPanel {
         setBackground(bgDark);
         setOpaque(true);
         
+        // Filter Panel
+        filterPanel = new FilterPanel(dataRepository);
+        filterPanel.setFilterListener((status, subject) -> {
+            refreshAllData();
+        });
+
         // Task Table
         taskTablePanel = new Task_Table(cardDark);
+        
+        // รวม Filter + Table ไว้ในพาเนลเดียวกัน
+        JPanel tableWithFilter = new JPanel(new BorderLayout());
+        tableWithFilter.setOpaque(false);
+        tableWithFilter.add(filterPanel, BorderLayout.NORTH);
+        tableWithFilter.add(taskTablePanel, BorderLayout.CENTER);
         
         taskTablePanel.setTaskTableListener(
             new Task_Table.TaskTableListener() {
@@ -133,7 +146,7 @@ public class Tasks extends JPanel {
         rightSidePanel.add(buttonBox, BorderLayout.SOUTH);
         
         // Add to Tasks panel
-        add(taskTablePanel, BorderLayout.CENTER);
+        add(tableWithFilter, BorderLayout.CENTER);
         add(rightSidePanel, BorderLayout.EAST);
 
         // Initial data
@@ -141,7 +154,19 @@ public class Tasks extends JPanel {
     }
         
     private void refreshAllData() {
-        taskTablePanel.updateTable(dataRepository.getAllTasks());
+        // อัปเดตรายการวิชาใน FilterPanel
+        filterPanel.refreshSubjects();
+
+        // ดึงค่า filter ปัจจุบัน
+        String filterStatus = filterPanel.getSelectedStatus();
+        String filterSubject = filterPanel.getSelectedSubject();
+
+        // แสดงงานที่กรองแล้ว
+        taskTablePanel.updateTable(
+            dataRepository.getFilteredTasks(filterStatus, filterSubject)
+        );
+
+        // Progress ยังคงแสดงจากงานทั้งหมด
         progressCardPanel.updateProgress(
             dataRepository.getProgressPercentage(),
             dataRepository.getCompletedCount(),
