@@ -19,7 +19,7 @@ public class Progress extends JPanel {
                 		new Color(230, 220, 210))
 				));
 
-        JLabel progressTitle = new JLabel("Weekly Progress", SwingConstants.CENTER);
+        JLabel progressTitle = new JLabel("Overall Progress", SwingConstants.CENTER);
         progressTitle.setFont(SansSerif);
         progressTitle.setForeground(textDark);
 
