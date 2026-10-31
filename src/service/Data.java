@@ -47,18 +47,24 @@ public class Data {
     }
 
     // --- กรองงานตามสถานะและวิชา ---
-    public List<Task> getFilteredTasks(String filterStatus, String filterSubject) {
+    public List<Task> getFilteredTasks(
+            String filterStatus,
+            String filterSubject,
+            boolean filterStarred
+	) {
         List<Task> allTasks = getAllTasks();
 
         boolean allStatus = (filterStatus == null || filterStatus.equals("All"));
         boolean allSubject = (filterSubject == null || filterSubject.equals("All"));
 
-        if (allStatus && allSubject) {
-            return allTasks;
-        }
-
         List<Task> filtered = new ArrayList<>();
         for (Task task : allTasks) {
+        	
+            // ตรวจสอบ Starred
+        	if (filterStarred && !task.isImportant()) {
+        	    continue;
+        	}
+        	
             // ตรวจสอบเงื่อนไขสถานะ
             if (!allStatus) {
                 String taskStatus = Status.calculateStatus(task.isCompleted(), task.getDueDate());

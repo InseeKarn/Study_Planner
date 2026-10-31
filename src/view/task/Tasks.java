@@ -28,7 +28,7 @@ public class Tasks extends JPanel {
         
         // Filter Panel
         filterPanel = new FilterPanel(dataRepository);
-        filterPanel.setFilterListener((status, subject) -> {
+        filterPanel.setFilterListener((status, subject, starred) -> {
             refreshAllData();
         });
 
@@ -150,8 +150,12 @@ public class Tasks extends JPanel {
         String filterSubject = filterPanel.getSelectedSubject();
 
         taskTablePanel.updateTable(
-            dataRepository.getFilteredTasks(filterStatus, filterSubject)
-        );
+        	    dataRepository.getFilteredTasks(
+        	        filterStatus,
+        	        filterSubject,
+        	        filterPanel.isStarredSelected()
+        	    )
+        	);
 
         progressCardPanel.updateProgress(
             dataRepository.getProgressPercentage(),

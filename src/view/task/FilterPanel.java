@@ -1,6 +1,8 @@
 package view.task;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.*;
 import service.Data;
@@ -8,7 +10,7 @@ import service.Data;
 public class FilterPanel extends JPanel {
 
     public interface FilterListener {
-        void onFilterChanged(String status, String subject);
+        void onFilterChanged(String status, String subject, boolean starred);
     }
 
     // Colors
@@ -21,6 +23,7 @@ public class FilterPanel extends JPanel {
 
     private final JComboBox<String> statusCombo;
     private final JComboBox<String> subjectCombo;
+    private final JCheckBox starredCheck;
     private final Data dataRepository;
     private FilterListener filterListener;
 
@@ -55,7 +58,57 @@ public class FilterPanel extends JPanel {
         statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 11));
         statusLabel.setForeground(textSecondary);
         add(statusLabel);
+        
 
+        // Only Starred Checkbox
+        starredCheck = new JCheckBox("Only");
+
+        starredCheck.setFont(new Font("SansSerif", Font.BOLD, 11));
+        starredCheck.setForeground(textPrimary);
+        starredCheck.setOpaque(false);
+        starredCheck.setFocusPainted(false);
+        starredCheck.setBorderPainted(false);
+        starredCheck.setContentAreaFilled(false);
+
+        starredCheck.setIcon(new StarredIcon(false));
+        starredCheck.setSelectedIcon(new StarredIcon(true));
+        starredCheck.setIconTextGap(6);
+        starredCheck.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // Yellow Star
+        JLabel starLabel = new JLabel("★");
+        starLabel.setFont(new Font("SansSerif", Font.BOLD, 19));
+        starLabel.setForeground(new Color(255, 213, 79));
+        starLabel.setVerticalAlignment(SwingConstants.CENTER);
+        starLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // Clicking star also toggles checkbox
+        starLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                starredCheck.doClick();
+            }
+        });
+
+        // Container
+        JPanel starredPanel = new JPanel(
+            new FlowLayout(FlowLayout.CENTER, 3, 0)
+        );
+
+        starredPanel.setBackground(elementDark);
+        starredPanel.setBorder(
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(borderColor, 1, true),
+                BorderFactory.createEmptyBorder(2, 7, 2, 7)
+            )
+        );
+
+        starredPanel.add(starredCheck);
+        starredPanel.add(starLabel);
+
+        starredPanel.setPreferredSize(new Dimension(112, 28));
+        add(starredPanel);
+        
         statusCombo = new JComboBox<>(STATUS_OPTIONS);
         styleComboBox(statusCombo);
         add(statusCombo);
@@ -67,12 +120,15 @@ public class FilterPanel extends JPanel {
         add(sep);
 
         // --- Subject ComboBox ---
+        
+        
         JLabel subjectLabel = new JLabel("Subject");
         subjectLabel.setFont(new Font("SansSerif", Font.PLAIN, 11));
         subjectLabel.setForeground(textSecondary);
         add(subjectLabel);
 
         subjectCombo = new JComboBox<>();
+        
         styleComboBox(subjectCombo);
         refreshSubjects();
         add(subjectCombo);
@@ -92,6 +148,71 @@ public class FilterPanel extends JPanel {
         // --- Listeners ---
         statusCombo.addActionListener(e -> fireFilterChanged());
         subjectCombo.addActionListener(e -> fireFilterChanged());
+        starredCheck.addActionListener(e -> fireFilterChanged());
+    }
+    
+ // Custom Starred Checkbox Icon
+    private class StarredIcon implements Icon {
+
+        private final boolean selected;
+
+        public StarredIcon(boolean selected) {
+            this.selected = selected;
+        }
+
+        @Override
+        public int getIconWidth() {
+            return 16;
+        }
+
+        @Override
+        public int getIconHeight() {
+            return 16;
+        }
+
+        @Override
+        public void paintIcon(
+                Component component,
+                Graphics g,
+                int x,
+                int y
+        ) {
+            Graphics2D g2 = (Graphics2D) g.create();
+
+            g2.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON
+            );
+
+            if (selected) {
+                // Selected background
+                g2.setColor(accentColor);
+                g2.fillRoundRect(x + 1, y + 1, 14, 14, 5, 5);
+
+                // Check mark
+                g2.setColor(Color.WHITE);
+                g2.setStroke(new BasicStroke(
+                    2f,
+                    BasicStroke.CAP_ROUND,
+                    BasicStroke.JOIN_ROUND
+                ));
+
+                g2.drawLine(x + 4, y + 8, x + 7, y + 11);
+                g2.drawLine(x + 7, y + 11, x + 12, y + 5);
+
+            } else {
+                // Unselected background
+                g2.setColor(elementDark);
+                g2.fillRoundRect(x + 1, y + 1, 14, 14, 5, 5);
+
+                // Border
+                g2.setColor(borderColor);
+                g2.setStroke(new BasicStroke(1.3f));
+                g2.drawRoundRect(x + 1, y + 1, 14, 14, 5, 5);
+            }
+
+            g2.dispose();
+        }
     }
 
     // สไตล์ ComboBox ให้เข้ากับธีมสีเข้ม
@@ -131,6 +252,7 @@ public class FilterPanel extends JPanel {
     private void clearFilters() {
         statusCombo.setSelectedIndex(0);
         subjectCombo.setSelectedIndex(0);
+        starredCheck.setSelected(false);
     }
 
     // แจ้ง listener เมื่อ filter เปลี่ยน
@@ -138,7 +260,9 @@ public class FilterPanel extends JPanel {
         if (filterListener != null) {
             String status = (String) statusCombo.getSelectedItem();
             String subject = (String) subjectCombo.getSelectedItem();
-            filterListener.onFilterChanged(status, subject);
+            boolean starred = starredCheck.isSelected();
+            
+            filterListener.onFilterChanged(status, subject, starred);
         }
     }
 
@@ -151,7 +275,12 @@ public class FilterPanel extends JPanel {
         return (String) subjectCombo.getSelectedItem();
     }
 
+    public boolean isStarredSelected() {
+        return starredCheck.isSelected();
+    }
+    
     public void setFilterListener(FilterListener listener) {
         this.filterListener = listener;
     }
 }
+
