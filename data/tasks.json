@@ -4,15 +4,15 @@
     "title": "Lab1",
     "dueDate": "01-11-2026",
     "status": "In Progress",
-    "description": "pldlcpspv,",
-    "isImportant": true
+    "description": "Test description",
+    "isImportant": false
   },
   {
     "subject": "Data",
     "title": "Lab2",
     "dueDate": "20-11-2026",
     "status": "In Progress",
-    "description": "fervrbtmrmtbmogtmobnotmnmt",
+    "description": "Test desc",
     "isImportant": false
   }
 ]
