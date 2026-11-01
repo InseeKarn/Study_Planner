@@ -17,24 +17,29 @@ public class TaskDetailPagePanel extends NotificationPage {
         setBackground(cardBg);
         setBorder(BorderFactory.createEmptyBorder(10, 12, 6, 12));
 
-        // 1. Top Row: Status Tag & Dynamic Due Text (คำนวณจำนวนวันที่เหลือ)
+        // 1. Top Row: วันที่กำหนดส่ง (ซ้ายบน) + สถิติมองเห็นง่าย/เวลาที่เหลือ (ขวาบน)
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
 
-        JLabel tagLabel = new JLabel(categoryTag.toUpperCase());
-        tagLabel.setFont(new Font("SansSerif", Font.BOLD, 11));
-        tagLabel.setForeground(task.getStatusColor());
+        // ซ้ายบน: แสดง วันที่กำหนดส่ง (Due Date String)
+        String dueDateStr = task.getDueDate() != null && !task.getDueDate().trim().isEmpty() 
+                ? "DUE " + task.getDueDate() 
+                : "NO DUE DATE";
+        JLabel dateLabel = new JLabel(dueDateStr);
+        dateLabel.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        dateLabel.setForeground(textSecondary);
 
+        // ขวาบน: คำนวณความเร่งด่วน (DAYS LEFT / DUE TODAY / OVERDUE)
         String dueText = calculateDueText(task);
         JLabel dueLabel = new JLabel(dueText);
-        dueLabel.setFont(new Font("SansSerif", Font.BOLD, 15));
-        dueLabel.setForeground(textSecondary);
+        dueLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
+        dueLabel.setForeground(task.getStatusColor());
 
-        topPanel.add(tagLabel, BorderLayout.WEST);
+        topPanel.add(dateLabel, BorderLayout.WEST);
         topPanel.add(dueLabel, BorderLayout.EAST);
         add(topPanel, BorderLayout.NORTH);
 
-        // 2. Center Content: เรียงตามลำดับ วิชา ➔ งาน ➔ รายละเอียดงาน
+        // 2. Center Content: เรียงลำดับ วิชา ➔ งาน ➔ รายละเอียดงาน
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setOpaque(false);
@@ -85,7 +90,7 @@ public class TaskDetailPagePanel extends NotificationPage {
             return "DUE TODAY";
         } else {
             long daysLeft = ChronoUnit.DAYS.between(today, due);
-            return "DAYS LEFT (" + daysLeft + ")";
+            return "DAYS LEFT (" + daysLeft + "d)";
         }
     }
 

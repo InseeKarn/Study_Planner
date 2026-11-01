@@ -38,7 +38,6 @@ public class NotificationPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(cardBg);
         
-        // ขอบเส้นปกติ (ลบแถบสีเหลืองขอบซ้ายออกแล้ว)
         setBorder(BorderFactory.createLineBorder(borderColor, 1));
 
         // Center Content Cards
@@ -93,7 +92,6 @@ public class NotificationPanel extends JPanel {
         for (Task t : allTasks) {
             if (t.isCompleted()) continue;
 
-            // งานที่ยังทำไม่เสร็จทั้งหมด
             totalPendingCount++;
 
             LocalDate due = Task.parseDueDate(t.getDueDate());
@@ -118,7 +116,7 @@ public class NotificationPanel extends JPanel {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         cardsContainer.add(new SummaryPagePanel(today.format(dtf), summary), "page_0");
 
-        // Page 2+: Task Details ตามลำดับความสำคัญ
+        // Page 2+: Task Details
         int pageIndex = 1;
         for (Map.Entry<Task, String> entry : taskPageMap.entrySet()) {
             cardsContainer.add(new TaskDetailPagePanel(entry.getKey(), entry.getValue()), "page_" + pageIndex);
@@ -168,7 +166,10 @@ public class NotificationPanel extends JPanel {
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.setPreferredSize(new Dimension(28, 20));
+        
+        // 🛠️ แก้ไข: ลบ Margin/Padding ด้านในปุ่มออก และขยาย PreferredSize
+        btn.setMargin(new Insets(0, 0, 0, 0));
+        btn.setPreferredSize(new Dimension(35, 24));
         return btn;
     }
 }
