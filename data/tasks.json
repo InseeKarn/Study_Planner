@@ -4,7 +4,7 @@
     "subject": "OOP",
     "title": "Lab 1: Class \u0026 Object Design",
     "dueDate": "25-10-2026",
-    "status": "In Progress",
+    "status": "Completed",
     "description": "Design and implement Java classes for Study Planner following Object-Oriented Programming principles.",
     "isImportant": true
   },
@@ -13,7 +13,7 @@
     "subject": "Data Structures",
     "title": "Lab 4: Sorting \u0026 Searching Algorithms",
     "dueDate": "15-11-2026",
-    "status": "In Progress",
+    "status": "Completed",
     "description": "Benchmark Quick Sort and Binary Search performance against Linear Search algorithm.",
     "isImportant": true
   },

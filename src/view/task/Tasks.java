@@ -2,6 +2,8 @@ package view.task;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import model.Task;
 import service.Data;
 
@@ -53,13 +55,7 @@ public class Tasks extends JPanel {
 
                 @Override
                 public void onDeleteClicked(Task task) {
-                    int option = JOptionPane.showConfirmDialog(
-                        Tasks.this,
-                        "Are you sure you want to delete this assignment?",
-                        "Delete Assignment",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.WARNING_MESSAGE
-                    );
+                    int option = showDeleteConfirmation();
 
                     if (option == JOptionPane.YES_OPTION) {
                         dataRepository.deleteTask(task);
@@ -141,6 +137,82 @@ public class Tasks extends JPanel {
         add(rightSidePanel, BorderLayout.EAST);
 
         refreshAllData();
+    }
+
+    private int showDeleteConfirmation() {
+        Window owner = SwingUtilities.getWindowAncestor(this);
+        JDialog dialog = new JDialog(owner, "Delete Assignment", Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setUndecorated(true);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+        JPanel root = new JPanel(new BorderLayout(0, 16));
+        root.setBackground(bgDark);
+        root.setBorder(new LineBorder(new Color(60, 60, 60), 1));
+
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBackground(cardDark);
+        header.setBorder(new EmptyBorder(14, 18, 14, 18));
+        JLabel title = new JLabel("Delete Assignment");
+        title.setFont(new Font("SansSerif", Font.BOLD, 16));
+        title.setForeground(textPrimary);
+        header.add(title, BorderLayout.WEST);
+        root.add(header, BorderLayout.NORTH);
+
+        JPanel messagePanel = new JPanel(new BorderLayout(14, 0));
+        messagePanel.setOpaque(false);
+        messagePanel.setBorder(new EmptyBorder(0, 20, 0, 20));
+        JLabel warning = new JLabel("!");
+        warning.setHorizontalAlignment(SwingConstants.CENTER);
+        warning.setFont(new Font("SansSerif", Font.BOLD, 20));
+        warning.setForeground(new Color(255, 193, 7));
+        warning.setPreferredSize(new Dimension(30, 34));
+        JLabel message = new JLabel("Are you sure you want to delete this assignment?");
+        message.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        message.setForeground(textPrimary);
+        messagePanel.add(warning, BorderLayout.WEST);
+        messagePanel.add(message, BorderLayout.CENTER);
+        root.add(messagePanel, BorderLayout.CENTER);
+
+        int[] result = {JOptionPane.NO_OPTION};
+        JButton noButton = createConfirmButton("No", cardDark, textPrimary, new Color(60, 60, 60));
+        JButton yesButton = createConfirmButton("Yes", new Color(190, 55, 75), Color.WHITE,
+                new Color(190, 55, 75));
+        noButton.addActionListener(e -> dialog.dispose());
+        yesButton.addActionListener(e -> {
+            result[0] = JOptionPane.YES_OPTION;
+            dialog.dispose();
+        });
+
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        buttons.setOpaque(false);
+        buttons.setBorder(new EmptyBorder(0, 18, 16, 18));
+        buttons.add(noButton);
+        buttons.add(yesButton);
+        root.add(buttons, BorderLayout.SOUTH);
+
+        dialog.setContentPane(root);
+        dialog.getRootPane().setDefaultButton(noButton);
+        dialog.getRootPane().registerKeyboardAction(
+                e -> dialog.dispose(),
+                KeyStroke.getKeyStroke("ESCAPE"),
+                JComponent.WHEN_IN_FOCUSED_WINDOW
+        );
+        dialog.setSize(420, 160);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+        return result[0];
+    }
+
+    private JButton createConfirmButton(String text, Color background, Color foreground, Color border) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("SansSerif", Font.BOLD, 11));
+        button.setBackground(background);
+        button.setForeground(foreground);
+        button.setFocusPainted(false);
+        button.setBorder(new LineBorder(border, 1));
+        button.setPreferredSize(new Dimension(82, 32));
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return button;
     }
         
     private void refreshAllData() {
