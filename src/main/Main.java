@@ -13,8 +13,8 @@ import view.task.Tasks;
 
 public class Main extends JFrame {
 
-    private CardLayout pageCardLayout;
-    private JPanel contentCardPanel;
+    private final CardLayout pageCardLayout;
+    private final JPanel contentCardPanel;
     private final Data dataRepository = new Data();
     private Point dragStart;
 

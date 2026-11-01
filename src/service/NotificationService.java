@@ -1,13 +1,11 @@
 package service;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -20,21 +18,12 @@ import view.notification.NotificationWindow;
 
 public class NotificationService {
 
-    private static final Path EXE =
-            Path.of("tools", "WinToast.exe").toAbsolutePath();
-
     private static final Path HISTORY =
             Path.of("data", "notification-history.properties");
-
-    private static final String APP_NAME = "Study Planner";
-    private static final String APP_ID = "StudyPlanner.App";
 
     private static ScheduledExecutorService scheduler;
 
     private static final Properties history = new Properties();
-
-    private static final DateTimeFormatter DATE_FORMAT =
-            DateTimeFormatter.ofPattern("d-M-yyyy");
 
     private static boolean historyLoaded = false;
 
@@ -103,9 +92,7 @@ public class NotificationService {
                     if (notifyOnce(
                             task,
                             taskKey,
-                            "STARRED",
-                            "Starred task",
-                            "This task is marked as important."
+                            "STARRED"
                     )) {
                         hasNewNotification = true;
                     }
@@ -120,9 +107,7 @@ public class NotificationService {
                     if (notifyOnce(
                             task,
                             taskKey,
-                            "OVERDUE",
-                            "Overdue task",
-                            "This task is past its due date."
+                            "OVERDUE"
                     )) {
                         hasNewNotification = true;
                     }
@@ -133,9 +118,7 @@ public class NotificationService {
                     if (notifyOnce(
                             task,
                             taskKey,
-                            "TOMORROW",
-                            "Due tomorrow",
-                            "This task is due in 1 day."
+                            "TOMORROW"
                     )) {
                         hasNewNotification = true;
                     }
@@ -157,9 +140,7 @@ public class NotificationService {
     private static boolean notifyOnce(
             Task task,
             String taskKey,
-            String type,
-            String notificationTitle,
-            String message
+            String type
     ) {
 
         String today = LocalDate.now().toString();
@@ -170,18 +151,12 @@ public class NotificationService {
             return false;
         }
 
-        String due = task.getDueDate() == null
-                ? "No due date"
-                : task.getDueDate();
-
-        String text = notificationTitle
-                + ": " + task.getTitle()
-                + " | Subject: " + task.getSubject()
-                + " | Due: " + due
-                + " | " + message;
-
-        // ปิดการเรียกใช้ Windows Toast แบบดั้งเดิม เพื่อไม่ให้เด้งป๊อปอัปซ้อนกัน
-        // showToastNotification(text);
+        String legacyHistoryKey = today + "_" + type + "_" + createLegacyTaskKey(task);
+        if (history.containsKey(legacyHistoryKey)) {
+            history.setProperty(historyKey, "sent");
+            saveHistory();
+            return false;
+        }
 
         // บันทึกประวัติ
         history.setProperty(historyKey, "sent");
@@ -189,63 +164,25 @@ public class NotificationService {
         return true;
     }
 
-    // ส่ง Windows Toast ผ่าน WinToast.exe (คงไว้เป็น utility เผื่อเรียกใช้ในอนาคต)
-    private static boolean showToastNotification(String message) {
-
-        try {
-            if (!Files.exists(EXE)) {
-                System.err.println("WinToast.exe not found: " + EXE);
-                return false;
-            }
-
-            ProcessBuilder pb = new ProcessBuilder(
-                    EXE.toString(),
-                    "--appname", APP_NAME,
-                    "--appid", APP_ID,
-                    "--text", message
-            );
-
-            pb.redirectErrorStream(true);
-
-            Process process = pb.start();
-
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()))) {
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
-                }
-            }
-
-            int exitCode = process.waitFor();
-
-            if (exitCode != 0) {
-                System.err.println(
-                        "WinToast failed. Exit code: " + exitCode
-                );
-                return false;
-            }
-
-            return true;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
     // สร้างรหัสประจำงานจากข้อมูลที่มีอยู่
     private static String createTaskKey(Task task) {
+        return hashTaskKey(String.valueOf(task.getId()));
+    }
 
+    // รองรับประวัติแจ้งเตือนเดิมที่ใช้วิชา ชื่องาน และวันส่งเป็นรหัส
+    private static String createLegacyTaskKey(Task task) {
         String raw = String.valueOf(task.getSubject())
                 + "|" + String.valueOf(task.getTitle())
                 + "|" + String.valueOf(task.getDueDate());
+        return hashTaskKey(raw);
+    }
+
+    private static String hashTaskKey(String raw) {
 
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
-            byte[] hash = digest.digest(raw.getBytes("UTF-8"));
+            byte[] hash = digest.digest(raw.getBytes(StandardCharsets.UTF_8));
 
             StringBuilder result = new StringBuilder();
 

@@ -1,34 +1,65 @@
 [
   {
+    "id": "TASK-001",
     "subject": "OOP",
-    "title": "lab2",
-    "dueDate": "1-10-2026",
+    "title": "Lab 1: Class \u0026 Object Design",
+    "dueDate": "25-10-2026",
     "status": "In Progress",
-    "description": "test desc",
+    "description": "Design and implement Java classes for Study Planner following Object-Oriented Programming principles.",
     "isImportant": true
   },
   {
-    "subject": "OOP",
-    "title": "lab1",
-    "dueDate": "31-10-2026",
+    "id": "TASK-005",
+    "subject": "Data Structures",
+    "title": "Lab 4: Sorting \u0026 Searching Algorithms",
+    "dueDate": "15-11-2026",
     "status": "In Progress",
-    "description": "test desc",
+    "description": "Benchmark Quick Sort and Binary Search performance against Linear Search algorithm.",
+    "isImportant": true
+  },
+  {
+    "id": "TASK-002",
+    "subject": "Database Systems",
+    "title": "Assignment 2: ER-Diagram",
+    "dueDate": "30-10-2026",
+    "status": "In Progress",
+    "description": "Create an ER-Diagram for Student Information System specifying Primary Keys and Foreign Keys.",
     "isImportant": false
   },
   {
-    "subject": "Data",
-    "title": "Lab2",
-    "dueDate": "20-11-2026",
-    "status": "In Progress",
-    "description": "Test desc",
-    "isImportant": false
-  },
-  {
-    "subject": "Data",
-    "title": "Lab1",
+    "id": "TASK-003",
+    "subject": "Software Engineering",
+    "title": "Mini Project Phase 1 Presentation",
     "dueDate": "01-11-2026",
+    "status": "In Progress",
+    "description": "Prepare presentation slides and live demo script for Study Planner project (20 mins).",
+    "isImportant": false
+  },
+  {
+    "id": "TASK-004",
+    "subject": "Web Development",
+    "title": "Homework 3: Asynchronous Programming",
+    "dueDate": "05-11-2026",
+    "status": "In Progress",
+    "description": "Complete exercises on JavaScript Fetch API, Promises, and Async/Await functions.",
+    "isImportant": false
+  },
+  {
+    "id": "TASK-006",
+    "subject": "OOP",
+    "title": "Lab 0: Java Environment Setup",
+    "dueDate": "15-10-2026",
     "status": "Completed",
-    "description": "Test description",
+    "description": "Install JDK 21 and configure VS Code / IntelliJ IDEA environment for course labs.",
+    "isImportant": false
+  },
+  {
+    "id": "TASK-007",
+    "subject": "Database Systems",
+    "title": "Assignment 1: Relational Algebra",
+    "dueDate": "20-10-2026",
+    "status": "Completed",
+    "description": "Submit problem set converting SQL queries into Relational Algebra expressions.",
     "isImportant": false
   }
 ]

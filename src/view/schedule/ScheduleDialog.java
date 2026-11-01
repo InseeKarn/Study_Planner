@@ -34,7 +34,7 @@ public class ScheduleDialog {
 
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(CARD);
-        header.setBorder(new EmptyBorder(16, 20, 16, 16));
+        header.setBorder(new EmptyBorder(16, 20, 16, 20));
         JPanel headingText = new JPanel();
         headingText.setOpaque(false);
         headingText.setLayout(new BoxLayout(headingText, BoxLayout.Y_AXIS));
@@ -48,15 +48,7 @@ public class ScheduleDialog {
         headingText.add(Box.createVerticalStrut(4));
         headingText.add(subject);
 
-        JButton close = new JButton("✕");
-        close.setForeground(MUTED);
-        close.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        close.setContentAreaFilled(false);
-        close.setBorderPainted(false);
-        close.setFocusPainted(false);
-        close.addActionListener(e -> dialog.dispose());
         header.add(headingText, BorderLayout.CENTER);
-        header.add(close, BorderLayout.EAST);
 
         Point[] dragPoint = new Point[1];
         header.addMouseListener(new MouseAdapter() {

@@ -4,16 +4,23 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 import model.Status;
@@ -36,7 +43,7 @@ public class Data {
     // --- ดึงรายชื่อวิชาที่ไม่ซ้ำกัน (สำหรับ Filter) ---
     public List<String> getDistinctSubjects() {
         List<String> subjects = new ArrayList<>();
-        for (Task t : taskList) {
+        for (Task t : getAllTasks()) {
             String sub = t.getSubject();
             if (sub != null && !sub.trim().isEmpty() && !subjects.contains(sub.trim())) {
                 subjects.add(sub.trim());
@@ -91,7 +98,9 @@ public class Data {
             case "Completed":
                 return taskStatus.equals(Status.COMPLETED);
             case "In Progress":
-                return !taskStatus.equals(Status.COMPLETED);
+                return !taskStatus.equals(Status.COMPLETED)
+                        && !taskStatus.equals(Status.DUE_TODAY)
+                        && !taskStatus.equals(Status.OVERDUE);
             case "Overdue":
                 return taskStatus.equals(Status.OVERDUE);
             case "Due Today":
@@ -112,7 +121,11 @@ public class Data {
     // --- ดึงงานทั้งหมด พร้อมจัดเรียงตามลำดับความด่วนและวันกำหนดส่งให้อัตโนมัติ ---
 
 public List<Task> getAllTasks() {
-    taskList.sort((t1, t2) -> {
+    List<Task> snapshot;
+    synchronized (taskList) {
+        snapshot = new ArrayList<>(taskList);
+    }
+    snapshot.sort((t1, t2) -> {
 
         // 1. งานติดดาวขึ้นก่อน
         if (t1.isImportant() != t2.isImportant()) {
@@ -142,7 +155,7 @@ public List<Task> getAllTasks() {
         return 0;
     });
 
-    return taskList;
+    return snapshot;
 }
 
     // --- ดึงรายการงานเฉพาะวันที่กำหนด (สำหรับ Schedule - Month View) ---
@@ -170,31 +183,68 @@ public List<Task> getAllTasks() {
     }
 
     public void addTask(Task task) {
-        taskList.add(task);
+        synchronized (taskList) {
+            taskList.add(task);
+        }
         saveToJson();
-        pcs.firePropertyChange("taskList", null, taskList);
+        pcs.firePropertyChange("taskList", null, getAllTasks());
     }
 
     public void deleteTask(Task task) {
-        taskList.remove(task);
+        synchronized (taskList) {
+            taskList.remove(task);
+        }
         saveToJson();
-        pcs.firePropertyChange("taskList", null, taskList);
+        pcs.firePropertyChange("taskList", null, getAllTasks());
     }
 
-    public void saveToJson() {
+    public synchronized void saveToJson() {
+        Path target = dataFile.toPath();
+        Path parent = target.getParent();
+        Path temporaryFile = null;
+
         try {
-            File parentFolder = dataFile.getParentFile();
-
-            if (parentFolder != null && !parentFolder.exists()) {
-                parentFolder.mkdirs();
+            if (parent != null) {
+                Files.createDirectories(parent);
             }
 
-            try (FileWriter writer = new FileWriter(dataFile)) {
-                gson.toJson(taskList, writer);
+            temporaryFile = Files.createTempFile(
+                    parent,
+                    dataFile.getName(),
+                    ".tmp"
+            );
+
+            try (var writer = Files.newBufferedWriter(
+                    temporaryFile,
+                    StandardCharsets.UTF_8
+            )) {
+                gson.toJson(getAllTasks(), writer);
             }
 
+            try {
+                Files.move(
+                        temporaryFile,
+                        target,
+                        StandardCopyOption.ATOMIC_MOVE,
+                        StandardCopyOption.REPLACE_EXISTING
+                );
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(
+                        temporaryFile,
+                        target,
+                        StandardCopyOption.REPLACE_EXISTING
+                );
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new UncheckedIOException("Unable to save " + target, e);
+        } finally {
+            if (temporaryFile != null) {
+                try {
+                    Files.deleteIfExists(temporaryFile);
+                } catch (IOException e) {
+                    System.err.println("Unable to remove temporary task file: " + temporaryFile);
+                }
+            }
         }
     }
 
@@ -204,43 +254,72 @@ public List<Task> getAllTasks() {
             return;
         }
 
+        List<Task> loadedTasks;
         try (FileReader reader = new FileReader(dataFile)) {
             Type taskListType = new TypeToken<List<Task>>() {}.getType();
-            List<Task> loadedTasks = gson.fromJson(reader, taskListType);
+            loadedTasks = gson.fromJson(reader, taskListType);
+        } catch (IOException | JsonParseException e) {
+            throw new IllegalStateException(
+                    "Unable to read task data from " + dataFile + ". The file was left unchanged.",
+                    e
+            );
+        }
 
-            if (loadedTasks != null) {
-                taskList.clear();
-                taskList.addAll(loadedTasks);
+        if (loadedTasks == null) {
+            return;
+        }
+
+        boolean assignedMissingIds = false;
+        for (Task task : loadedTasks) {
+            if (task == null) {
+                throw new IllegalStateException(
+                        "Task data contains a null entry in " + dataFile + ". The file was left unchanged."
+                );
             }
+            if (task.getId() == null || task.getId().isBlank()) {
+                task.setId(UUID.randomUUID().toString());
+                assignedMissingIds = true;
+            }
+        }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        synchronized (taskList) {
             taskList.clear();
+            taskList.addAll(loadedTasks);
+        }
+
+        if (assignedMissingIds) {
+            saveToJson();
         }
     }
 
     public int getCompletedCount() {
+        return countCompleted(getAllTasks());
+    }
+
+    public int getTotalCount() {
+        return getAllTasks().size();
+    }
+
+    public int getPendingCount() {
+        List<Task> snapshot = getAllTasks();
+        return snapshot.size() - countCompleted(snapshot);
+    }
+
+    public int getProgressPercentage() {
+        List<Task> snapshot = getAllTasks();
+        int total = snapshot.size();
+        if (total == 0) return 0;
+        return (int) (((double) countCompleted(snapshot) / total) * 100);
+    }
+
+    private int countCompleted(List<Task> tasks) {
         int count = 0;
-        for (Task task : taskList) {
+        for (Task task : tasks) {
             if (task.isCompleted()) {
                 count++;
             }
         }
         return count;
-    }
-
-    public int getTotalCount() {
-        return taskList.size();
-    }
-
-    public int getPendingCount() {
-        return getTotalCount() - getCompletedCount();
-    }
-
-    public int getProgressPercentage() {
-        int total = getTotalCount();
-        if (total == 0) return 0;
-        return (int) (((double) getCompletedCount() / total) * 100);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {

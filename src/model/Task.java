@@ -3,16 +3,21 @@ package model;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
+import java.time.format.DateTimeParseException;
+import java.util.UUID;
 
 public class Task {
-    private String subject;
-    private String title;
-    private String dueDate;
-    private String status;
-    private String description;
-    private boolean isImportant = false;
+    private volatile String id;
+    private volatile String subject;
+    private volatile String title;
+    private volatile String dueDate;
+    private volatile String status;
+    private volatile String description;
+    private volatile boolean isImportant = false;
 
     public Task(String subject, String title, String dueDate, String status, String description) {
+        this.id = UUID.randomUUID().toString();
         this.subject = subject;
         this.title = title;
         this.dueDate = dueDate;
@@ -21,6 +26,9 @@ public class Task {
     }
 
     // Getters & Setters
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
     public String getSubject() { return subject; }
     public void setSubject(String subject) { this.subject = subject; }
 
@@ -63,6 +71,10 @@ public class Task {
         return Status.getDisplayText(isCompleted(), dueDate);
     }
 
+    private static final DateTimeFormatter DUE_DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("d-M-uuuu")
+                    .withResolverStyle(ResolverStyle.STRICT);
+
     // ตัวช่วยแปลง String วันที่ รองรับ d-M-yyyy
     public static LocalDate parseDueDate(String dateStr) {
         if (dateStr == null || dateStr.trim().isEmpty()) {
@@ -70,9 +82,8 @@ public class Task {
         }
 
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d-M-yyyy");
-            return LocalDate.parse(dateStr.trim(), formatter);
-        } catch (Exception ignored) {
+            return LocalDate.parse(dateStr.trim(), DUE_DATE_FORMATTER);
+        } catch (DateTimeParseException ignored) {
             return null;
         }
     }

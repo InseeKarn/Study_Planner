@@ -16,7 +16,6 @@ public class Task_Table extends JPanel {
     // Colors
     private final Color textPrimary = new Color(242, 242, 242);
     private final Color textSecondary = new Color(153, 153, 153);
-    private final Color elementDark = new Color(32, 32, 32);
     private final Color cardBg = new Color(24, 24, 24);
 
     public interface TaskTableListener {
