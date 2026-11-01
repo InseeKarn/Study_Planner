@@ -99,12 +99,10 @@ public class NotificationPanel extends JPanel {
             if (due != null && due.equals(today)) {
                 todayCount++;
                 taskPageMap.putIfAbsent(t, "TODAY");
-            }
-            if (due != null && due.isBefore(today)) {
+            } else if (due != null && due.isBefore(today)) {
                 overdueCount++;
                 taskPageMap.putIfAbsent(t, "OVERDUE");
-            }
-            if (!t.isCompleted()) {
+            } else {
                 inProgressCount++;
                 taskPageMap.putIfAbsent(t, "IN PROGRESS");
             }

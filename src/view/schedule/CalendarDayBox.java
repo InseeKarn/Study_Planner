@@ -37,7 +37,7 @@ public class CalendarDayBox extends JPanel {
 
             for (Task task : tasksOnDate) {
                 JLabel taskLabel = new JLabel("• " + task.getTitle());
-                taskLabel.setFont(new Font("SansSerif", Font.PLAIN, 11));
+                taskLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
                 taskLabel.setForeground(task.getStatusColor());
                 taskLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 

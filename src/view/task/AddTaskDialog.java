@@ -58,6 +58,7 @@ public class AddTaskDialog {
                 Dialog.ModalityType.APPLICATION_MODAL
         );
 
+        dialog.setUndecorated(true);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setResizable(false);
 

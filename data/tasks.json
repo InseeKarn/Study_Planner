@@ -8,14 +8,6 @@
     "isImportant": true
   },
   {
-    "subject": "Data",
-    "title": "Lab2",
-    "dueDate": "20-11-2026",
-    "status": "In Progress",
-    "description": "Test desc",
-    "isImportant": false
-  },
-  {
     "subject": "OOP",
     "title": "lab1",
     "dueDate": "31-10-2026",
@@ -25,9 +17,17 @@
   },
   {
     "subject": "Data",
+    "title": "Lab2",
+    "dueDate": "20-11-2026",
+    "status": "In Progress",
+    "description": "Test desc",
+    "isImportant": false
+  },
+  {
+    "subject": "Data",
     "title": "Lab1",
     "dueDate": "01-11-2026",
-    "status": "In Progress",
+    "status": "Completed",
     "description": "Test description",
     "isImportant": false
   }
